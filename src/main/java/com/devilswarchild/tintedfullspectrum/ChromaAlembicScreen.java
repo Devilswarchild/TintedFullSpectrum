@@ -165,6 +165,15 @@ public class ChromaAlembicScreen extends AbstractContainerScreen<ChromaAlembicMe
         renderTooltip(guiGraphics, mouseX, mouseY);
     }
 
+    // Vanilla's default label color (0x404040, a dark gray tuned for the light vanilla inventory
+    // texture) is nearly unreadable against this GUI's dark green/brown panel -- draw both labels
+    // light with a shadow instead.
+    @Override
+    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        guiGraphics.drawString(font, title, titleLabelX, titleLabelY, 0xFFE0E0E0, true);
+        guiGraphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0xFFE0E0E0, true);
+    }
+
     // AbstractContainerScreen.mouseDragged completely replaces the normal widget-dispatch logic
     // with its own slot-drag-across-multiple-slots handling, and never forwards to the focused
     // child widget -- so without this override, a slider registers the initial click (which jumps
