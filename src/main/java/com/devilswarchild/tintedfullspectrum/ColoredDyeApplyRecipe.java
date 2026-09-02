@@ -31,12 +31,14 @@ public class ColoredDyeApplyRecipe extends CustomRecipe {
         if (found == null) {
             return ItemStack.EMPTY;
         }
-        DyedItemColor color = found[1].get(DataComponents.DYED_COLOR);
+        TintColorComponent color = found[1].get(TintedFullSpectrum.TINT_COLOR.get());
         if (color == null) {
             return ItemStack.EMPTY;
         }
         ItemStack result = found[0].copyWithCount(1);
-        result.set(DataComponents.DYED_COLOR, color);
+        // The output is a vanilla item, so it must carry vanilla's own DYED_COLOR to actually
+        // render dyed through vanilla's leather-armor rendering pipeline.
+        result.set(DataComponents.DYED_COLOR, new DyedItemColor(color.rgb(), true));
         return result;
     }
 

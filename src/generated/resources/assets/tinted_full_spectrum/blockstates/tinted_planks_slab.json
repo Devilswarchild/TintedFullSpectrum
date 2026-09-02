@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "tinted_full_spectrum:block/tinted_planks_slab"
+    },
+    "type=double": {
+      "model": "tinted_full_spectrum:block/tinted_planks"
+    },
+    "type=top": {
+      "model": "tinted_full_spectrum:block/tinted_planks_slab_top"
+    }
+  }
+}

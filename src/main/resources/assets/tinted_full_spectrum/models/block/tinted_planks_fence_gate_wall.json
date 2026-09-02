@@ -1,0 +1,6 @@
+{
+  "parent": "tinted_full_spectrum:block/custom/tinted_fence_gate_wall",
+  "textures": {
+    "texture": "tinted_full_spectrum:block/white_planks"
+  }
+}

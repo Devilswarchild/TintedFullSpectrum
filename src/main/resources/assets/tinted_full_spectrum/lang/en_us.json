@@ -4,6 +4,12 @@
   "block.tinted_full_spectrum.tinted_floor_torch": "Tinted Torch",
   "item.tinted_full_spectrum.tinted_torch": "Tinted Torch",
 
+  "block.tinted_full_spectrum.tinted_planks": "Tinted Planks",
+  "block.tinted_full_spectrum.tinted_planks_stairs": "Tinted Planks Stairs",
+  "block.tinted_full_spectrum.tinted_planks_slab": "Tinted Planks Slab",
+  "block.tinted_full_spectrum.tinted_planks_fence": "Tinted Planks Fence",
+  "block.tinted_full_spectrum.tinted_planks_fence_gate": "Tinted Planks Fence Gate",
+
   "block.tinted_full_spectrum.chroma_alembic": "Chroma Alembic",
   "container.tinted_full_spectrum.chroma_alembic": "Chroma Alembic",
   "item.tinted_full_spectrum.blank_dye": "Blank Dye",

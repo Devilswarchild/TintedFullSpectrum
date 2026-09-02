@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    { "item": "minecraft:torch" },
+    { "item": "minecraft:iron_ingot" },
+    { "item": "tinted_full_spectrum:blank_dye" }
+  ],
+  "result": {
+    "id": "tinted_full_spectrum:tinted_torch",
+    "count": 1
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "tinted_full_spectrum:block/custom/tinted_stairs",
+  "textures": {
+    "bottom": "tinted_full_spectrum:block/white_planks",
+    "top": "tinted_full_spectrum:block/white_planks",
+    "side": "tinted_full_spectrum:block/white_planks"
+  }
+}

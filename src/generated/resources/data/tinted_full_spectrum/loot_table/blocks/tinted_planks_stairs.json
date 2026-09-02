@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:copy_components",
+              "include": [
+                "tinted_full_spectrum:tint_color"
+              ],
+              "source": "block_entity"
+            }
+          ],
+          "name": "tinted_full_spectrum:tinted_planks_stairs"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "tinted_full_spectrum:blocks/tinted_planks_stairs"
+}

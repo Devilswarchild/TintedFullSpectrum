@@ -5,7 +5,6 @@ import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -14,7 +13,6 @@ import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -101,7 +99,7 @@ public class ChromaAlembicBlockEntity extends BlockEntity implements Container {
         if (!output.is(TintedFullSpectrum.COLORED_DYE_ITEM.get()) || output.getCount() >= output.getMaxStackSize()) {
             return false;
         }
-        DyedItemColor existing = output.get(DataComponents.DYED_COLOR);
+        TintColorComponent existing = output.get(TintedFullSpectrum.TINT_COLOR.get());
         return existing != null && existing.rgb() == selectedColor;
     }
 
@@ -118,7 +116,7 @@ public class ChromaAlembicBlockEntity extends BlockEntity implements Container {
         ItemStack output = items.get(OUTPUT_SLOT);
         if (output.isEmpty()) {
             ItemStack newOutput = new ItemStack(TintedFullSpectrum.COLORED_DYE_ITEM.get());
-            newOutput.set(DataComponents.DYED_COLOR, new DyedItemColor(targetColor, true));
+            newOutput.set(TintedFullSpectrum.TINT_COLOR.get(), new TintColorComponent(targetColor));
             items.set(OUTPUT_SLOT, newOutput);
         } else {
             output.grow(1);

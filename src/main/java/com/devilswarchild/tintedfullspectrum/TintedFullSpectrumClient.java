@@ -1,6 +1,5 @@
 package com.devilswarchild.tintedfullspectrum;
 
-import net.minecraft.world.item.component.DyedItemColor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -14,32 +13,45 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 @Mod(value = TintedFullSpectrum.MODID, dist = Dist.CLIENT)
 @EventBusSubscriber(modid = TintedFullSpectrum.MODID, value = Dist.CLIENT)
 public class TintedFullSpectrumClient {
-    // Reads the tint (tintindex 0, embers + flame) from the placed block's block entity.
-    // Falls back to DEFAULT_COLOR (white/untinted) when there's no block entity yet (e.g. inventory context).
+    // One handler for every tintable block (reads its live block entity color), shared rather than
+    // duplicated per material -- see tintable_system_and_planks.md.
     @SubscribeEvent
     static void onRegisterBlockColors(RegisterColorHandlersEvent.Block event) {
         event.register((state, level, pos, tintIndex) -> {
-            if (level != null && pos != null && level.getBlockEntity(pos) instanceof TintedTorchBlockEntity tintedTorch) {
-                return tintedTorch.getColor();
+            if (level != null && pos != null && level.getBlockEntity(pos) instanceof TintableBlockEntity tintable) {
+                return tintable.getColor();
             }
-            return TintedTorchBlockEntity.DEFAULT_COLOR;
-        }, TintedFullSpectrum.TINTED_FLOOR_TORCH.get(), TintedFullSpectrum.TINTED_WALL_TORCH.get());
+            return TintColorComponent.DEFAULT_COLOR;
+        }, TintedFullSpectrum.TINTED_FLOOR_TORCH.get(), TintedFullSpectrum.TINTED_WALL_TORCH.get(),
+                TintedFullSpectrum.TINTED_PLANKS.get(), TintedFullSpectrum.TINTED_PLANKS_STAIRS.get(),
+                TintedFullSpectrum.TINTED_PLANKS_SLAB.get(), TintedFullSpectrum.TINTED_PLANKS_FENCE.get(),
+                TintedFullSpectrum.TINTED_PLANKS_FENCE_GATE.get());
 
-        // The Chroma Alembic's tint-preview overlay/lens has no color storage of its own yet, so it
-        // stays untinted. White here matters beyond the lens itself -- TerrainParticle multiplies
-        // break/dig particles by this same tintIndex-0 color regardless of which texture they
-        // sample, so anything but white would tint the pedestal's break particles too.
-        event.register((state, level, pos, tintIndex) -> 0xFFFFFF, TintedFullSpectrum.CHROMA_ALEMBIC.get());
+        // The lens/tint-preview overlay tracks whatever color is currently selected in the GUI (not
+        // just the last completed craft), read straight off the block entity -- ChromaAlembicRenderer
+        // re-queries this every frame rather than baking it into a chunk mesh, so it updates live as
+        // the player drags sliders, no rebake workaround needed (see blockcolor_rebake_gotcha memory,
+        // which only applies to BlockColors-baked chunk meshes, not per-frame BlockEntityRenderer
+        // reads). Note this same tintIndex-0 color also multiplies the pedestal's break/dig particles
+        // (TerrainParticle), which is an acceptable side effect here.
+        event.register((state, level, pos, tintIndex) -> {
+            if (level != null && pos != null && level.getBlockEntity(pos) instanceof ChromaAlembicBlockEntity alembic) {
+                return alembic.getSelectedColor();
+            }
+            return 0xFFFFFF;
+        }, TintedFullSpectrum.CHROMA_ALEMBIC.get());
     }
 
+    // One handler for every tintable item (reads its stored TintColorComponent), shared rather than
+    // duplicated per material.
     @SubscribeEvent
     static void onRegisterItemColors(RegisterColorHandlersEvent.Item event) {
-        event.register((stack, tintIndex) -> TintedTorchBlockEntity.DEFAULT_COLOR, TintedFullSpectrum.TINTED_TORCH_ITEM.get());
+        event.register((stack, tintIndex) -> TintColorComponent.getOrDefault(stack, TintColorComponent.DEFAULT_COLOR),
+                TintedFullSpectrum.TINTED_TORCH_ITEM.get(), TintedFullSpectrum.COLORED_DYE_ITEM.get(),
+                TintedFullSpectrum.TINTED_PLANKS_ITEM.get(), TintedFullSpectrum.TINTED_PLANKS_STAIRS_ITEM.get(),
+                TintedFullSpectrum.TINTED_PLANKS_SLAB_ITEM.get(), TintedFullSpectrum.TINTED_PLANKS_FENCE_ITEM.get(),
+                TintedFullSpectrum.TINTED_PLANKS_FENCE_GATE_ITEM.get());
         event.register((stack, tintIndex) -> 0xFFFFFF, TintedFullSpectrum.CHROMA_ALEMBIC_ITEM.get());
-
-        // Colored Dye reuses blank_dye.png untinted (layer0, tintindex 0) and carries its RGB via the
-        // same DataComponents.DYED_COLOR component vanilla uses for dyed leather armor.
-        event.register((stack, tintIndex) -> DyedItemColor.getOrDefault(stack, 0xFFFFFF), TintedFullSpectrum.COLORED_DYE_ITEM.get());
     }
 
     // The static/platform halves aren't referenced by any blockstate (the placed block's model is

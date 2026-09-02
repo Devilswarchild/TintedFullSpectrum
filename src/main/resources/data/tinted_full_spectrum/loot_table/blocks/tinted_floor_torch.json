@@ -11,7 +11,14 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "tinted_full_spectrum:tinted_torch"
+          "name": "tinted_full_spectrum:tinted_torch",
+          "functions": [
+            {
+              "function": "minecraft:copy_components",
+              "source": "block_entity",
+              "include": ["tinted_full_spectrum:tint_color"]
+            }
+          ]
         }
       ],
       "rolls": 1.0
