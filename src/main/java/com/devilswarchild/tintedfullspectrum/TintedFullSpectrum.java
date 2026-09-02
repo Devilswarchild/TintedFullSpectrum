@@ -1,117 +1,128 @@
-package com.example.examplemod;
+package com.devilswarchild.tintedfullspectrum;
 
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
 
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.StandingAndWallBlockItem;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.material.MapColor;
-import net.neoforged.api.distmarker.Dist;
+import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.level.block.SoundType;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-// The value here should match an entry in the META-INF/neoforge.mods.toml file
-@Mod(ExampleMod.MODID)
-public class ExampleMod {
-    // Define mod id in a common place for everything to reference
+// The value here must match the entry in the META-INF/neoforge.mods.toml file
+@Mod(TintedFullSpectrum.MODID)
+public class TintedFullSpectrum {
     public static final String MODID = "tinted_full_spectrum";
-    // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
-    // Create a Deferred Register to hold Blocks which will all be registered under the "examplemod" namespace
+
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
-    // Create a Deferred Register to hold Items which will all be registered under the "examplemod" namespace
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
-    // Create a Deferred Register to hold CreativeModeTabs which will all be registered under the "examplemod" namespace
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MODID);
+    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(BuiltInRegistries.MENU, MODID);
+    public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, MODID);
 
-    // Creates a new Block with the id "examplemod:example_block", combining the namespace and path
-    public static final DeferredBlock<Block> EXAMPLE_BLOCK = BLOCKS.registerSimpleBlock("example_block", BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
-    // Creates a new BlockItem with the id "examplemod:example_block", combining the namespace and path
-    public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("example_block", EXAMPLE_BLOCK);
+    // Floor and wall variants of the RGB-tintable torch. Placement rules/behavior come from vanilla's
+    // TorchBlock/WallTorchBlock; properties mirror vanilla's torch exactly (see Blocks.TORCH/WALL_TORCH).
+    public static final DeferredBlock<Block> TINTED_FLOOR_TORCH = BLOCKS.register("tinted_floor_torch",
+            () -> new TintedFloorTorchBlock(ParticleTypes.FLAME,
+                    Properties.of().noCollission().instabreak().lightLevel(state -> 14).sound(SoundType.WOOD).pushReaction(PushReaction.DESTROY)));
+    public static final DeferredBlock<Block> TINTED_WALL_TORCH = BLOCKS.register("tinted_wall_torch",
+            () -> new TintedWallTorchBlock(ParticleTypes.FLAME,
+                    Properties.of().noCollission().instabreak().lightLevel(state -> 14).sound(SoundType.WOOD)
+                            .dropsLike(TINTED_FLOOR_TORCH.get()).pushReaction(PushReaction.DESTROY)));
 
-    // Creates a new food item with the id "examplemod:example_id", nutrition 1 and saturation 2
-    public static final DeferredItem<Item> EXAMPLE_ITEM = ITEMS.registerSimpleItem("example_item", new Item.Properties().food(new FoodProperties.Builder()
-            .alwaysEdible().nutrition(1).saturationModifier(2f).build()));
+    // A single item places either variant depending on where the player clicks, exactly like vanilla's "torch" item.
+    public static final DeferredItem<Item> TINTED_TORCH_ITEM = ITEMS.register("tinted_torch",
+            () -> new StandingAndWallBlockItem(TINTED_FLOOR_TORCH.get(), TINTED_WALL_TORCH.get(), new Item.Properties(), Direction.DOWN));
 
-    // Creates a creative tab with the id "examplemod:example_tab" for the example item, that is placed after the combat tab
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
-            .title(Component.translatable("itemGroup.examplemod")) //The language key for the title of your CreativeModeTab
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TintedTorchBlockEntity>> TINTED_TORCH_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "tinted_torch", () -> BlockEntityType.Builder.of(TintedTorchBlockEntity::new, TINTED_FLOOR_TORCH.get(), TINTED_WALL_TORCH.get()).build(null));
+
+    // The Chroma Alembic: faces the player at placement like a furnace; right-click opens the
+    // dye-crafting GUI. See chroma_alembic_full_build.md.
+    public static final DeferredBlock<Block> CHROMA_ALEMBIC = BLOCKS.register("chroma_alembic",
+            () -> new ChromaAlembicBlock(Properties.of().mapColor(MapColor.METAL).strength(3.5f).sound(SoundType.METAL).noOcclusion()));
+    public static final DeferredItem<BlockItem> CHROMA_ALEMBIC_ITEM = ITEMS.registerSimpleBlockItem("chroma_alembic", CHROMA_ALEMBIC);
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ChromaAlembicBlockEntity>> CHROMA_ALEMBIC_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "chroma_alembic", () -> BlockEntityType.Builder.of(ChromaAlembicBlockEntity::new, CHROMA_ALEMBIC.get()).build(null));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<ChromaAlembicMenu>> CHROMA_ALEMBIC_MENU = MENU_TYPES.register("chroma_alembic",
+            () -> IMenuTypeExtension.create((windowId, inv, buf) -> new ChromaAlembicMenu(windowId, inv, buf)));
+
+    // Crafting input/output for the Chroma Alembic. Colored Dye reuses blank_dye.png and carries its
+    // RGB via the same DataComponents.DYED_COLOR component vanilla uses for dyed leather, applied
+    // through an ItemColor handler instead of the fixed 16-color DyeColor enum.
+    public static final DeferredItem<Item> BLANK_DYE_ITEM = ITEMS.registerSimpleItem("blank_dye", new Item.Properties());
+    public static final DeferredItem<ColoredDyeItem> COLORED_DYE_ITEM = ITEMS.register("colored_dye", () -> new ColoredDyeItem(new Item.Properties()));
+
+    // Applies a Colored Dye's stored RGB to a vanilla DYEABLE item via crafting (see
+    // ColoredDyeApplyRecipe) -- ColoredDyeItem#useOn handles the block-targeted case (right-click).
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<ColoredDyeApplyRecipe>> COLORED_DYE_APPLY_SERIALIZER = RECIPE_SERIALIZERS.register(
+            "colored_dye_apply", () -> new SimpleCraftingRecipeSerializer<>(ColoredDyeApplyRecipe::new));
+
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN_TAB = CREATIVE_MODE_TABS.register("main", () -> CreativeModeTab.builder()
+            .title(Component.translatable("itemGroup.tinted_full_spectrum"))
             .withTabsBefore(CreativeModeTabs.COMBAT)
-            .icon(() -> EXAMPLE_ITEM.get().getDefaultInstance())
+            .icon(() -> CHROMA_ALEMBIC_ITEM.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
-                output.accept(EXAMPLE_ITEM.get());// Add the example item to the tab. For your own tabs, this method is preferred over the event
+                output.accept(TINTED_TORCH_ITEM.get());
+                output.accept(CHROMA_ALEMBIC_ITEM.get());
+                output.accept(BLANK_DYE_ITEM.get());
+                output.accept(COLORED_DYE_ITEM.get());
             }).build());
 
-    // The constructor for the mod class is the first code that is run when your mod is loaded.
-    // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
-    public ExampleMod(IEventBus modEventBus, ModContainer modContainer) {
-        // Register the commonSetup method for modloading
-        modEventBus.addListener(this::commonSetup);
-
-        // Register the Deferred Register to the mod event bus so blocks get registered
+    // FML recognizes some parameter types like IEventBus or ModContainer and passes them in automatically.
+    public TintedFullSpectrum(IEventBus modEventBus, ModContainer modContainer) {
         BLOCKS.register(modEventBus);
-        // Register the Deferred Register to the mod event bus so items get registered
         ITEMS.register(modEventBus);
-        // Register the Deferred Register to the mod event bus so tabs get registered
         CREATIVE_MODE_TABS.register(modEventBus);
+        BLOCK_ENTITY_TYPES.register(modEventBus);
+        MENU_TYPES.register(modEventBus);
+        RECIPE_SERIALIZERS.register(modEventBus);
 
-        // Register ourselves for server and other game events we are interested in.
-        // Note that this is necessary if and only if we want *this* class (ExampleMod) to respond directly to events.
-        // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
-        NeoForge.EVENT_BUS.register(this);
+        // Register the Chroma Alembic's client->server "Selected" color payload
+        modEventBus.addListener(this::registerPayloads);
 
-        // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
-
-        // Register our mod's ModConfigSpec so that FML can create and load the config file for us
-        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
-    private void commonSetup(FMLCommonSetupEvent event) {
-        // Some common setup code
-        LOGGER.info("HELLO FROM COMMON SETUP");
-
-        if (Config.LOG_DIRT_BLOCK.getAsBoolean()) {
-            LOGGER.info("DIRT BLOCK >> {}", BuiltInRegistries.BLOCK.getKey(Blocks.DIRT));
-        }
-
-        LOGGER.info("{}{}", Config.MAGIC_NUMBER_INTRODUCTION.get(), Config.MAGIC_NUMBER.getAsInt());
-
-        Config.ITEM_STRINGS.get().forEach((item) -> LOGGER.info("ITEM >> {}", item));
-    }
-
-    // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
-            event.accept(EXAMPLE_BLOCK_ITEM);
+            event.accept(TINTED_TORCH_ITEM);
+            event.accept(CHROMA_ALEMBIC_ITEM);
         }
     }
 
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
-    @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event) {
-        // Do something when the server starts
-        LOGGER.info("HELLO from server starting");
+    private void registerPayloads(RegisterPayloadHandlersEvent event) {
+        PayloadRegistrar registrar = event.registrar("1");
+        registrar.playToServer(ChromaAlembicSetColorPayload.TYPE, ChromaAlembicSetColorPayload.STREAM_CODEC, ChromaAlembicSetColorPayload::handle);
     }
 }

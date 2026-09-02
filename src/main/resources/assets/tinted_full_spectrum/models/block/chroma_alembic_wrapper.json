@@ -1,0 +1,16 @@
+{
+  "parent": "tinted_full_spectrum:block/custom/chroma_alembic",
+  "textures": {
+    "2": "tinted_full_spectrum:block/machine_pole",
+    "3": "tinted_full_spectrum:block/vial_red",
+    "4": "tinted_full_spectrum:block/vial_green",
+    "5": "tinted_full_spectrum:block/vial_blue",
+    "6": "tinted_full_spectrum:block/machine_lens",
+    "7": "tinted_full_spectrum:block/machine_platform",
+    "8": "tinted_full_spectrum:block/machine_base",
+    "9": "tinted_full_spectrum:block/tint_preview",
+    "particle": "tinted_full_spectrum:block/tint_preview"
+  },
+  "render_type": "translucent",
+  "ambientocclusion": false
+}

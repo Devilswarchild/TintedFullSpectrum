@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "tinted_full_spectrum:block/chroma_alembic_invisible" },
+    "facing=south": { "model": "tinted_full_spectrum:block/chroma_alembic_invisible" },
+    "facing=east":  { "model": "tinted_full_spectrum:block/chroma_alembic_invisible" },
+    "facing=west":  { "model": "tinted_full_spectrum:block/chroma_alembic_invisible" }
+  }
+}

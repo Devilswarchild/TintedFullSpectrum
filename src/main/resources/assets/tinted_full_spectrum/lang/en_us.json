@@ -1,0 +1,11 @@
+{
+  "itemGroup.tinted_full_spectrum": "Tinted: Full Spectrum",
+
+  "block.tinted_full_spectrum.tinted_floor_torch": "Tinted Torch",
+  "item.tinted_full_spectrum.tinted_torch": "Tinted Torch",
+
+  "block.tinted_full_spectrum.chroma_alembic": "Chroma Alembic",
+  "container.tinted_full_spectrum.chroma_alembic": "Chroma Alembic",
+  "item.tinted_full_spectrum.blank_dye": "Blank Dye",
+  "item.tinted_full_spectrum.colored_dye": "Colored Dye"
+}

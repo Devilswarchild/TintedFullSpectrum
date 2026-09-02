@@ -1,0 +1,622 @@
+{
+	"format_version": "1.21.11",
+	"credit": "Made with Blockbench",
+	"textures": {
+		"2": "tinted_full_spectrum:block/machine_pole",
+		"6": "tinted_full_spectrum:block/machine_lens",
+		"8": "tinted_full_spectrum:block/machine_base",
+		"9": "tinted_full_spectrum:block/tint_preview",
+		"particle": "tinted_full_spectrum:block/tint_preview"
+	},
+	"elements": [
+		{
+			"name": "pedestal_layer4_bottom",
+			"from": [
+				0,
+				0,
+				0
+			],
+			"to": [
+				16,
+				3,
+				16
+			],
+			"faces": {
+				"north": {
+					"uv": [
+						0,
+						11,
+						16,
+						16
+					],
+					"texture": "#8"
+				},
+				"east": {
+					"uv": [
+						0,
+						11,
+						16,
+						16
+					],
+					"texture": "#8"
+				},
+				"south": {
+					"uv": [
+						0,
+						11,
+						16,
+						16
+					],
+					"texture": "#8"
+				},
+				"west": {
+					"uv": [
+						0,
+						11,
+						16,
+						16
+					],
+					"texture": "#8"
+				},
+				"up": {
+					"uv": [
+						0,
+						1,
+						16,
+						11
+					],
+					"texture": "#8"
+				},
+				"down": {
+					"uv": [
+						0,
+						1,
+						16,
+						11
+					],
+					"texture": "#8"
+				}
+			}
+		},
+		{
+			"name": "pedestal_layer3",
+			"from": [
+				2,
+				3,
+				2
+			],
+			"to": [
+				14,
+				6,
+				14
+			],
+			"faces": {
+				"north": {
+					"uv": [
+						0,
+						11,
+						16,
+						16
+					],
+					"texture": "#8"
+				},
+				"east": {
+					"uv": [
+						0,
+						11,
+						16,
+						16
+					],
+					"texture": "#8"
+				},
+				"south": {
+					"uv": [
+						0,
+						11,
+						16,
+						16
+					],
+					"texture": "#8"
+				},
+				"west": {
+					"uv": [
+						0,
+						11,
+						16,
+						16
+					],
+					"texture": "#8"
+				},
+				"up": {
+					"uv": [
+						0,
+						1,
+						16,
+						11
+					],
+					"texture": "#8"
+				},
+				"down": {
+					"uv": [
+						0,
+						1,
+						16,
+						11
+					],
+					"texture": "#8"
+				}
+			}
+		},
+		{
+			"name": "pedestal_layer2",
+			"from": [
+				4,
+				6,
+				4
+			],
+			"to": [
+				12,
+				9,
+				12
+			],
+			"faces": {
+				"north": {
+					"uv": [
+						0,
+						11,
+						16,
+						16
+					],
+					"texture": "#8"
+				},
+				"east": {
+					"uv": [
+						0,
+						11,
+						16,
+						16
+					],
+					"texture": "#8"
+				},
+				"south": {
+					"uv": [
+						0,
+						11,
+						16,
+						16
+					],
+					"texture": "#8"
+				},
+				"west": {
+					"uv": [
+						0,
+						11,
+						16,
+						16
+					],
+					"texture": "#8"
+				},
+				"up": {
+					"uv": [
+						0,
+						1,
+						16,
+						11
+					],
+					"texture": "#8"
+				},
+				"down": {
+					"uv": [
+						0,
+						1,
+						16,
+						11
+					],
+					"texture": "#8"
+				}
+			}
+		},
+		{
+			"name": "pedestal_layer1_top",
+			"from": [
+				6,
+				9,
+				6
+			],
+			"to": [
+				10,
+				12,
+				10
+			],
+			"faces": {
+				"north": {
+					"uv": [
+						0,
+						11,
+						16,
+						16
+					],
+					"texture": "#8"
+				},
+				"east": {
+					"uv": [
+						0,
+						11,
+						16,
+						16
+					],
+					"texture": "#8"
+				},
+				"south": {
+					"uv": [
+						0,
+						11,
+						16,
+						16
+					],
+					"texture": "#8"
+				},
+				"west": {
+					"uv": [
+						0,
+						11,
+						16,
+						16
+					],
+					"texture": "#8"
+				},
+				"up": {
+					"uv": [
+						0,
+						1,
+						16,
+						11
+					],
+					"texture": "#8"
+				},
+				"down": {
+					"uv": [
+						0,
+						1,
+						16,
+						11
+					],
+					"texture": "#8"
+				}
+			}
+		},
+		{
+			"name": "lens",
+			"from": [
+				7,
+				24,
+				5
+			],
+			"to": [
+				9,
+				30,
+				11
+			],
+			"rotation": {
+				"angle": 0,
+				"axis": "y",
+				"origin": [
+					0,
+					1,
+					0
+				]
+			},
+			"faces": {
+				"north": {
+					"uv": [
+						0,
+						2,
+						3,
+						14
+					],
+					"texture": "#6"
+				},
+				"east": {
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					],
+					"texture": "#6"
+				},
+				"south": {
+					"uv": [
+						13,
+						2,
+						16,
+						14
+					],
+					"texture": "#6"
+				},
+				"west": {
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					],
+					"texture": "#6"
+				},
+				"up": {
+					"uv": [
+						16,
+						14,
+						13,
+						2
+					],
+					"texture": "#6"
+				},
+				"down": {
+					"uv": [
+						3,
+						2,
+						0,
+						14
+					],
+					"texture": "#6"
+				}
+			}
+		},
+		{
+			"name": "pole",
+			"from": [
+				7,
+				12,
+				7
+			],
+			"to": [
+				9,
+				24,
+				9
+			],
+			"faces": {
+				"north": {
+					"uv": [
+						5,
+						0,
+						11,
+						16
+					],
+					"texture": "#2"
+				},
+				"east": {
+					"uv": [
+						5,
+						0,
+						11,
+						16
+					],
+					"texture": "#2"
+				},
+				"south": {
+					"uv": [
+						5,
+						0,
+						11,
+						16
+					],
+					"texture": "#2"
+				},
+				"west": {
+					"uv": [
+						5,
+						0,
+						11,
+						16
+					],
+					"texture": "#2"
+				},
+				"up": {
+					"uv": [
+						5,
+						10,
+						11,
+						12
+					],
+					"texture": "#2"
+				},
+				"down": {
+					"uv": [
+						5,
+						6,
+						11,
+						8
+					],
+					"texture": "#2"
+				}
+			}
+		},
+		{
+			"name": "tint preview back",
+			"from": [
+				9,
+				24,
+				5
+			],
+			"to": [
+				9,
+				30,
+				11
+			],
+			"rotation": {
+				"angle": 0,
+				"axis": "y",
+				"origin": [
+					2,
+					1,
+					0
+				]
+			},
+			"faces": {
+				"north": {
+					"uv": [
+						0,
+						2,
+						3,
+						14
+					],
+					"texture": "#9"
+				},
+				"east": {
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					],
+					"texture": "#9"
+				},
+				"south": {
+					"uv": [
+						13,
+						2,
+						16,
+						14
+					],
+					"texture": "#9"
+				},
+				"west": {
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					],
+					"texture": "#9"
+				},
+				"up": {
+					"uv": [
+						16,
+						14,
+						13,
+						2
+					],
+					"texture": "#9"
+				},
+				"down": {
+					"uv": [
+						3,
+						2,
+						0,
+						14
+					],
+					"texture": "#9"
+				}
+			}
+		},
+		{
+			"name": "tint preview front",
+			"from": [
+				7,
+				24,
+				5
+			],
+			"to": [
+				7,
+				30,
+				11
+			],
+			"rotation": {
+				"angle": 0,
+				"axis": "y",
+				"origin": [
+					0,
+					1,
+					0
+				]
+			},
+			"faces": {
+				"north": {
+					"uv": [
+						0,
+						2,
+						3,
+						14
+					],
+					"texture": "#9"
+				},
+				"east": {
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					],
+					"texture": "#9"
+				},
+				"south": {
+					"uv": [
+						13,
+						2,
+						16,
+						14
+					],
+					"texture": "#9"
+				},
+				"west": {
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					],
+					"texture": "#9"
+				},
+				"up": {
+					"uv": [
+						16,
+						14,
+						13,
+						2
+					],
+					"texture": "#9"
+				},
+				"down": {
+					"uv": [
+						3,
+						2,
+						0,
+						14
+					],
+					"texture": "#9"
+				}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "pedestal",
+			"origin": [
+				8,
+				0,
+				8
+			],
+			"children": [
+				0,
+				1,
+				2,
+				3
+			]
+		},
+		{
+			"name": "pole_and_lens",
+			"origin": [
+				8,
+				12,
+				8
+			],
+			"children": [
+				4,
+				5,
+				6,
+				7
+			]
+		}
+	]
+}

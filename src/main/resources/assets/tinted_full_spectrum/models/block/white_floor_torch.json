@@ -1,0 +1,11 @@
+{
+  "parent": "tinted_full_spectrum:block/custom/white_metal_floor_torch",
+  "textures": {
+    "all": "tinted_full_spectrum:block/white_metal_floor_torch",
+    "particle": "tinted_full_spectrum:block/white_metal_floor_torch",
+    "1": "tinted_full_spectrum:block/white_metal_floor_torch",
+    "2": "tinted_full_spectrum:block/white_torch_embers",
+    "3": "tinted_full_spectrum:block/white_torch_flame"
+  },
+  "render_type": "cutout_mipped"
+}
