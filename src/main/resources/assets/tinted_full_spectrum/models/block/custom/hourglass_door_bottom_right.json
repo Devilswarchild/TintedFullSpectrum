@@ -75,5 +75,5 @@
       }
     }
   ],
-  "render_type": "translucent"
+  "render_type": "cutout"
 }

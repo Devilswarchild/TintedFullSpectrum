@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": { "tag": "minecraft:planks" },
+    "G": { "item": "minecraft:glass" }
+  },
+  "pattern": [
+    "## ",
+    "##G",
+    "## "
+  ],
+  "result": {
+    "id": "tinted_full_spectrum:hourglass_door",
+    "count": 3
+  }
+}

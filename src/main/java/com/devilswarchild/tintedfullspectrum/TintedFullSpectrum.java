@@ -116,13 +116,65 @@ public class TintedFullSpectrum {
     public static final DeferredItem<TintableBlockItem> HOURGLASS_DOOR_ITEM = ITEMS.register("hourglass_door",
             () -> new TintableBlockItem(HOURGLASS_DOOR.get(), new Item.Properties()));
 
-    public static final DeferredBlock<Block> TINTED_DOOR = BLOCKS.register("tinted_door",
-            () -> new TintedDoorBlock(Properties.ofFullCopy(Blocks.OAK_DOOR)));
-    public static final DeferredItem<TintableBlockItem> TINTED_DOOR_ITEM = ITEMS.register("tinted_door",
-            () -> new TintableBlockItem(TINTED_DOOR.get(), new Item.Properties()));
+    // The vanilla-parity Tinted Door comes in one variant per vanilla door material (11 wood species
+    // + iron, matching vanilla's own per-material door blocks) so a converted door keeps its source
+    // material's own grain/look, just tinted -- unlike Tinted Planks, which is deliberately
+    // material-agnostic. Geometry is identical across all variants (vanilla's plain door box +
+    // tintindex); only the texture differs, via per-material child models parenting to the 4 shared
+    // parameterized templates under models/block/custom/tinted_door_*.json. Copper (all 4 oxidation
+    // stages + waxed) was deliberately left out entirely (confirmed with user) -- the stages have
+    // real, subtly distinct colors of their own, different enough that an arbitrary RGB tint doesn't
+    // add anything worth the complexity; those doors and their vanilla icons are untouched.
+    public static final java.util.List<String> TINTED_DOOR_MATERIALS = java.util.List.of(
+            "oak", "spruce", "birch", "jungle", "acacia", "cherry", "dark_oak", "mangrove", "bamboo",
+            "crimson", "warped", "iron");
+
+    public static final java.util.Map<String, DeferredBlock<Block>> TINTED_DOOR_BLOCKS = registerTintedDoorBlocks();
+    public static final java.util.Map<String, DeferredItem<TintableBlockItem>> TINTED_DOOR_ITEMS = registerTintedDoorItems();
+
+    private static java.util.Map<String, DeferredBlock<Block>> registerTintedDoorBlocks() {
+        java.util.Map<String, DeferredBlock<Block>> map = new java.util.LinkedHashMap<>();
+        for (String material : TINTED_DOOR_MATERIALS) {
+            map.put(material, BLOCKS.register("tinted_" + material + "_door",
+                    () -> new TintedDoorBlock(Properties.ofFullCopy(Blocks.OAK_DOOR))));
+        }
+        return map;
+    }
+
+    private static java.util.Map<String, DeferredItem<TintableBlockItem>> registerTintedDoorItems() {
+        java.util.Map<String, DeferredItem<TintableBlockItem>> map = new java.util.LinkedHashMap<>();
+        for (String material : TINTED_DOOR_MATERIALS) {
+            DeferredBlock<Block> block = TINTED_DOOR_BLOCKS.get(material);
+            map.put(material, ITEMS.register("tinted_" + material + "_door",
+                    () -> new TintableBlockItem(block.get(), new Item.Properties())));
+        }
+        return map;
+    }
+
+    // Maps each vanilla door Block to the material name its Tinted Door equivalent is registered
+    // under -- used by ConvertAndDyeRecipe to pick the matching output. Keyed by Block identity
+    // rather than a tag/name string since that's what's actually available at match time.
+    public static final java.util.Map<Block, String> VANILLA_DOOR_MATERIAL = java.util.Map.ofEntries(
+            java.util.Map.entry(Blocks.OAK_DOOR, "oak"), java.util.Map.entry(Blocks.SPRUCE_DOOR, "spruce"),
+            java.util.Map.entry(Blocks.BIRCH_DOOR, "birch"), java.util.Map.entry(Blocks.JUNGLE_DOOR, "jungle"),
+            java.util.Map.entry(Blocks.ACACIA_DOOR, "acacia"), java.util.Map.entry(Blocks.CHERRY_DOOR, "cherry"),
+            java.util.Map.entry(Blocks.DARK_OAK_DOOR, "dark_oak"), java.util.Map.entry(Blocks.MANGROVE_DOOR, "mangrove"),
+            java.util.Map.entry(Blocks.BAMBOO_DOOR, "bamboo"), java.util.Map.entry(Blocks.CRIMSON_DOOR, "crimson"),
+            java.util.Map.entry(Blocks.WARPED_DOOR, "warped"), java.util.Map.entry(Blocks.IRON_DOOR, "iron"));
+    // Copper doors (all 4 oxidation stages, plus waxed) are deliberately NOT in this map -- confirmed
+    // with user, their natural oxidation colors are distinct enough on their own that an RGB tint
+    // isn't worth it. ConvertAndDyeRecipe treats "not in this map" as "not convertible" for doors, so
+    // the recipe just doesn't match at all for these -- no phantom empty-result preview.
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TintedDoorBlockEntity>> TINTED_DOOR_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
-            "tinted_door", () -> BlockEntityType.Builder.of(TintedDoorBlockEntity::new, HOURGLASS_DOOR.get(), TINTED_DOOR.get()).build(null));
+            "tinted_door", () -> {
+                java.util.List<Block> valid = new java.util.ArrayList<>();
+                valid.add(HOURGLASS_DOOR.get());
+                for (DeferredBlock<Block> block : TINTED_DOOR_BLOCKS.values()) {
+                    valid.add(block.get());
+                }
+                return BlockEntityType.Builder.of(TintedDoorBlockEntity::new, valid.toArray(new Block[0])).build(null);
+            });
 
     // The Chroma Alembic: faces the player at placement like a furnace; right-click opens the
     // dye-crafting GUI. See chroma_alembic_full_build.md.
@@ -157,11 +209,6 @@ public class TintedFullSpectrum {
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<ConvertAndDyeRecipe>> CONVERT_AND_DYE_SERIALIZER = RECIPE_SERIALIZERS.register(
             "convert_and_dye", () -> new SimpleCraftingRecipeSerializer<>(ConvertAndDyeRecipe::new));
 
-    // Vanilla wooden door + glass pane each side + Colored Dye -> Hourglass Door -- see
-    // HourglassDoorConvertRecipe. The vanilla-parity Tinted Door has no separate recipe of its own;
-    // it goes through ConvertAndDyeRecipe above like every other plain shape.
-    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<HourglassDoorConvertRecipe>> HOURGLASS_DOOR_CONVERT_SERIALIZER = RECIPE_SERIALIZERS.register(
-            "hourglass_door_convert", () -> new SimpleCraftingRecipeSerializer<>(HourglassDoorConvertRecipe::new));
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN_TAB = CREATIVE_MODE_TABS.register("main", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.tinted_full_spectrum"))
@@ -175,7 +222,9 @@ public class TintedFullSpectrum {
                 output.accept(TINTED_PLANKS_FENCE_ITEM.get());
                 output.accept(TINTED_PLANKS_FENCE_GATE_ITEM.get());
                 output.accept(HOURGLASS_DOOR_ITEM.get());
-                output.accept(TINTED_DOOR_ITEM.get());
+                for (DeferredItem<TintableBlockItem> item : TINTED_DOOR_ITEMS.values()) {
+                    output.accept(item.get());
+                }
                 output.accept(CHROMA_ALEMBIC_ITEM.get());
                 output.accept(BLANK_DYE_ITEM.get());
                 output.accept(COLORED_DYE_ITEM.get());
@@ -206,8 +255,14 @@ public class TintedFullSpectrum {
             event.accept(TINTED_PLANKS_SLAB_ITEM);
             event.accept(TINTED_PLANKS_FENCE_ITEM);
             event.accept(TINTED_PLANKS_FENCE_GATE_ITEM);
-            event.accept(HOURGLASS_DOOR_ITEM);
-            event.accept(TINTED_DOOR_ITEM);
+            // HOURGLASS_DOOR_ITEM deliberately NOT also added here (unlike everything else in this
+            // method) -- being in both this vanilla tab AND our own MAIN_TAB simultaneously is the
+            // suspected cause of its creative-tab icon rendering blank (component count/tooltip
+            // showed it tagged with both tab names at once, unlike every other item here). Testing
+            // whether removing the duplicate tab membership fixes it before assuming this for others.
+            for (DeferredItem<TintableBlockItem> item : TINTED_DOOR_ITEMS.values()) {
+                event.accept(item);
+            }
             event.accept(CHROMA_ALEMBIC_ITEM);
         }
     }

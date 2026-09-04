@@ -1,9 +1,8 @@
 {
+  "parent": "minecraft:block/block",
   "ambientocclusion": false,
   "textures": {
-    "particle": "#bottom",
-    "hinge": "tinted_full_spectrum:block/hourglass_hinges",
-    "bottom": "tinted_full_spectrum:block/white_door_bottom"
+    "particle": "#bottom"
   },
   "elements": [
     {
@@ -74,75 +73,7 @@
           "tintindex": 0
         }
       }
-    },
-    {
-      "name": "hinge",
-      "from": [
-        -0.5,
-        2,
-        0
-      ],
-      "to": [
-        3.5,
-        6,
-        2
-      ],
-      "faces": {
-        "down": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#hinge"
-        },
-        "up": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#hinge"
-        },
-        "north": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#hinge"
-        },
-        "south": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#hinge"
-        },
-        "west": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#hinge"
-        },
-        "east": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#hinge"
-        }
-      }
     }
-  ]
+  ],
+  "render_type": "cutout"
 }

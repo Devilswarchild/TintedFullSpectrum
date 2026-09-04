@@ -24,9 +24,10 @@ import net.minecraft.world.level.block.StairBlock;
 // wooden_fences/fence_gates/wooden_doors tags; which Tinted shape it maps to is determined by the
 // input block's Java type (StairBlock/SlabBlock/FenceBlock/FenceGateBlock/DoorBlock, or plain Block
 // for planks themselves), not the tag, since the tags don't distinguish shape on their own. Note the
-// vanilla-parity Tinted Door maps here (plain door + dye, no extra ingredients) -- the Hourglass
-// Door's door+glass-panes+dye recipe is a separate, differently-shaped recipe (see
-// HourglassDoorConvertRecipe) since its window geometry actually calls for the glass panes.
+// vanilla-parity Tinted Door maps here (plain door + dye, no extra ingredients). The Hourglass
+// Door is acquired completely differently -- a static shaped recipe (recipe/hourglass_door.json,
+// visible in JEI/EMI/REI) makes the blank door, then the generic RecolorRecipe (Colored Dye + any
+// TintableItem) colors it, same two-step pattern as the torch.
 public class ConvertAndDyeRecipe extends CustomRecipe {
     public ConvertAndDyeRecipe(CraftingBookCategory category) {
         super(category);
@@ -83,9 +84,17 @@ public class ConvertAndDyeRecipe extends CustomRecipe {
     }
 
     private static boolean isConvertible(ItemStack stack) {
-        return stack.is(ItemTags.PLANKS) || stack.is(ItemTags.WOODEN_STAIRS)
+        if (stack.is(ItemTags.PLANKS) || stack.is(ItemTags.WOODEN_STAIRS)
                 || stack.is(ItemTags.WOODEN_SLABS) || stack.is(ItemTags.WOODEN_FENCES)
-                || stack.is(ItemTags.FENCE_GATES) || stack.is(ItemTags.WOODEN_DOORS);
+                || stack.is(ItemTags.FENCE_GATES)) {
+            return true;
+        }
+        // Doors are convertible only if they're an exact match in VANILLA_DOOR_MATERIAL (not just
+        // "any door" via ItemTags.DOORS) -- waxed copper doors are deliberately excluded there so
+        // this recipe cleanly doesn't match for them, rather than matching and then producing an
+        // empty/confusingly-named result. See the map's own comment for why.
+        return stack.getItem() instanceof BlockItem blockItem
+                && TintedFullSpectrum.VANILLA_DOOR_MATERIAL.containsKey(blockItem.getBlock());
     }
 
     private static Item tintedEquivalent(Item item) {
@@ -102,7 +111,11 @@ public class ConvertAndDyeRecipe extends CustomRecipe {
         } else if (block instanceof FenceBlock) {
             return TintedFullSpectrum.TINTED_PLANKS_FENCE_ITEM.get();
         } else if (block instanceof DoorBlock) {
-            return TintedFullSpectrum.TINTED_DOOR_ITEM.get();
+            // Doors need a per-material lookup (16 variants, keeping each material's own grain)
+            // instead of one universal output like every other shape here.
+            String material = TintedFullSpectrum.VANILLA_DOOR_MATERIAL.get(block);
+            var doorItem = material != null ? TintedFullSpectrum.TINTED_DOOR_ITEMS.get(material) : null;
+            return doorItem != null ? doorItem.get() : null;
         }
         return TintedFullSpectrum.TINTED_PLANKS_ITEM.get();
     }

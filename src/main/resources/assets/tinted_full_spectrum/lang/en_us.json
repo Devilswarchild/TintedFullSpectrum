@@ -11,7 +11,19 @@
   "block.tinted_full_spectrum.tinted_planks_fence_gate": "Tinted Planks Fence Gate",
 
   "block.tinted_full_spectrum.hourglass_door": "Hourglass Door",
-  "block.tinted_full_spectrum.tinted_door": "Tinted Door",
+
+  "block.tinted_full_spectrum.tinted_oak_door": "Tinted Oak Door",
+  "block.tinted_full_spectrum.tinted_spruce_door": "Tinted Spruce Door",
+  "block.tinted_full_spectrum.tinted_birch_door": "Tinted Birch Door",
+  "block.tinted_full_spectrum.tinted_jungle_door": "Tinted Jungle Door",
+  "block.tinted_full_spectrum.tinted_acacia_door": "Tinted Acacia Door",
+  "block.tinted_full_spectrum.tinted_cherry_door": "Tinted Cherry Door",
+  "block.tinted_full_spectrum.tinted_dark_oak_door": "Tinted Dark Oak Door",
+  "block.tinted_full_spectrum.tinted_mangrove_door": "Tinted Mangrove Door",
+  "block.tinted_full_spectrum.tinted_bamboo_door": "Tinted Bamboo Door",
+  "block.tinted_full_spectrum.tinted_crimson_door": "Tinted Crimson Door",
+  "block.tinted_full_spectrum.tinted_warped_door": "Tinted Warped Door",
+  "block.tinted_full_spectrum.tinted_iron_door": "Tinted Iron Door",
 
   "block.tinted_full_spectrum.chroma_alembic": "Chroma Alembic",
   "container.tinted_full_spectrum.chroma_alembic": "Chroma Alembic",

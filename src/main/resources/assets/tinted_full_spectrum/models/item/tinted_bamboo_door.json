@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "tinted_full_spectrum:item/bamboo_door"
+  }
+}

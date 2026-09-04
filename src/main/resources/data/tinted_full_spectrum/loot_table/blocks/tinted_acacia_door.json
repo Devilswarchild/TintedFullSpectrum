@@ -1,0 +1,39 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "tinted_full_spectrum:tinted_acacia_door",
+          "conditions": [
+            {
+              "condition": "minecraft:block_state_property",
+              "block": "tinted_full_spectrum:tinted_acacia_door",
+              "properties": {
+                "half": "lower"
+              }
+            }
+          ],
+          "functions": [
+            {
+              "function": "minecraft:copy_components",
+              "source": "block_entity",
+              "include": [
+                "tinted_full_spectrum:tint_color"
+              ]
+            }
+          ]
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "tinted_full_spectrum:blocks/tinted_acacia_door"
+}

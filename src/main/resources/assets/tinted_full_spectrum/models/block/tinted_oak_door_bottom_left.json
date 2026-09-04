@@ -1,0 +1,6 @@
+{
+  "parent": "tinted_full_spectrum:block/custom/tinted_door_bottom_left",
+  "textures": {
+    "bottom": "tinted_full_spectrum:block/oak_door_bottom"
+  }
+}

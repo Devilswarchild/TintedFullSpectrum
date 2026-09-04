@@ -1,0 +1,6 @@
+{
+  "parent": "tinted_full_spectrum:block/custom/tinted_door_top_right",
+  "textures": {
+    "top": "tinted_full_spectrum:block/acacia_door_top"
+  }
+}
