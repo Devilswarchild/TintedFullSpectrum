@@ -108,6 +108,22 @@ public class TintedFullSpectrum {
                     TINTED_PLANKS.get(), TINTED_PLANKS_STAIRS.get(), TINTED_PLANKS_SLAB.get(),
                     TINTED_PLANKS_FENCE.get(), TINTED_PLANKS_FENCE_GATE.get()).build(null));
 
+    // Two tintable door families, sharing one block entity type: the Hourglass Door (fully custom
+    // geometry) and the vanilla-parity Door (vanilla's own silhouette, just recolorable). See
+    // tinted_full_spectrum_doors_handoff.md.
+    public static final DeferredBlock<Block> HOURGLASS_DOOR = BLOCKS.register("hourglass_door",
+            () -> new TintedHourglassDoorBlock(Properties.ofFullCopy(Blocks.OAK_DOOR)));
+    public static final DeferredItem<TintableBlockItem> HOURGLASS_DOOR_ITEM = ITEMS.register("hourglass_door",
+            () -> new TintableBlockItem(HOURGLASS_DOOR.get(), new Item.Properties()));
+
+    public static final DeferredBlock<Block> TINTED_DOOR = BLOCKS.register("tinted_door",
+            () -> new TintedDoorBlock(Properties.ofFullCopy(Blocks.OAK_DOOR)));
+    public static final DeferredItem<TintableBlockItem> TINTED_DOOR_ITEM = ITEMS.register("tinted_door",
+            () -> new TintableBlockItem(TINTED_DOOR.get(), new Item.Properties()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TintedDoorBlockEntity>> TINTED_DOOR_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "tinted_door", () -> BlockEntityType.Builder.of(TintedDoorBlockEntity::new, HOURGLASS_DOOR.get(), TINTED_DOOR.get()).build(null));
+
     // The Chroma Alembic: faces the player at placement like a furnace; right-click opens the
     // dye-crafting GUI. See chroma_alembic_full_build.md.
     public static final DeferredBlock<Block> CHROMA_ALEMBIC = BLOCKS.register("chroma_alembic",
@@ -141,6 +157,12 @@ public class TintedFullSpectrum {
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<ConvertAndDyeRecipe>> CONVERT_AND_DYE_SERIALIZER = RECIPE_SERIALIZERS.register(
             "convert_and_dye", () -> new SimpleCraftingRecipeSerializer<>(ConvertAndDyeRecipe::new));
 
+    // Vanilla wooden door + glass pane each side + Colored Dye -> Hourglass Door -- see
+    // HourglassDoorConvertRecipe. The vanilla-parity Tinted Door has no separate recipe of its own;
+    // it goes through ConvertAndDyeRecipe above like every other plain shape.
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<HourglassDoorConvertRecipe>> HOURGLASS_DOOR_CONVERT_SERIALIZER = RECIPE_SERIALIZERS.register(
+            "hourglass_door_convert", () -> new SimpleCraftingRecipeSerializer<>(HourglassDoorConvertRecipe::new));
+
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN_TAB = CREATIVE_MODE_TABS.register("main", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.tinted_full_spectrum"))
             .withTabsBefore(CreativeModeTabs.COMBAT)
@@ -152,6 +174,8 @@ public class TintedFullSpectrum {
                 output.accept(TINTED_PLANKS_SLAB_ITEM.get());
                 output.accept(TINTED_PLANKS_FENCE_ITEM.get());
                 output.accept(TINTED_PLANKS_FENCE_GATE_ITEM.get());
+                output.accept(HOURGLASS_DOOR_ITEM.get());
+                output.accept(TINTED_DOOR_ITEM.get());
                 output.accept(CHROMA_ALEMBIC_ITEM.get());
                 output.accept(BLANK_DYE_ITEM.get());
                 output.accept(COLORED_DYE_ITEM.get());
@@ -182,6 +206,8 @@ public class TintedFullSpectrum {
             event.accept(TINTED_PLANKS_SLAB_ITEM);
             event.accept(TINTED_PLANKS_FENCE_ITEM);
             event.accept(TINTED_PLANKS_FENCE_GATE_ITEM);
+            event.accept(HOURGLASS_DOOR_ITEM);
+            event.accept(TINTED_DOOR_ITEM);
             event.accept(CHROMA_ALEMBIC_ITEM);
         }
     }

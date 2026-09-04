@@ -36,11 +36,6 @@ public class ChromaAlembicMenu extends AbstractContainerMenu {
             public boolean mayPlace(ItemStack stack) {
                 return stack.is(TintedFullSpectrum.BLANK_DYE_ITEM.get());
             }
-
-            @Override
-            public int getMaxStackSize() {
-                return 1;
-            }
         });
         addSlot(new Slot(blockEntity, ChromaAlembicBlockEntity.OUTPUT_SLOT, 102, 97) {
             @Override
