@@ -1,0 +1,7 @@
+{
+  "parent": "tinted_full_spectrum:block/custom/tinted_vanilla_wall_torch",
+  "textures": {
+    "torch": "tinted_full_spectrum:block/tinted_vanilla_torch"
+  },
+  "render_type": "cutout"
+}

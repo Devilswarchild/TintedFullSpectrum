@@ -28,7 +28,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -49,6 +48,22 @@ public class TintedFullSpectrum {
     public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(BuiltInRegistries.MENU, MODID);
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, MODID);
     public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENTS = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, MODID);
+    public static final DeferredRegister<net.minecraft.core.particles.ParticleType<?>> PARTICLE_TYPES = DeferredRegister.create(Registries.PARTICLE_TYPE, MODID);
+
+    // The vanilla-parity Torch's flame particle, tinted to match the torch's stored color -- see
+    // TintedFlameParticleOptions/TintedFlameParticle.
+    public static final DeferredHolder<net.minecraft.core.particles.ParticleType<?>, net.minecraft.core.particles.ParticleType<TintedFlameParticleOptions>> TINTED_FLAME_PARTICLE = PARTICLE_TYPES.register(
+            "tinted_flame", () -> new net.minecraft.core.particles.ParticleType<TintedFlameParticleOptions>(false) {
+                @Override
+                public com.mojang.serialization.MapCodec<TintedFlameParticleOptions> codec() {
+                    return TintedFlameParticleOptions.CODEC;
+                }
+
+                @Override
+                public net.minecraft.network.codec.StreamCodec<? super net.minecraft.network.RegistryFriendlyByteBuf, TintedFlameParticleOptions> streamCodec() {
+                    return TintedFlameParticleOptions.STREAM_CODEC;
+                }
+            });
 
     // The one packed-RGB component every tintable item/block in this mod shares -- see
     // tintable_system_and_planks.md and TintColorComponent.
@@ -72,8 +87,26 @@ public class TintedFullSpectrum {
     public static final DeferredItem<TintableStandingAndWallBlockItem> TINTED_TORCH_ITEM = ITEMS.register("tinted_torch",
             () -> new TintableStandingAndWallBlockItem(TINTED_FLOOR_TORCH.get(), TINTED_WALL_TORCH.get(), new Item.Properties(), Direction.DOWN));
 
+    // Vanilla-parity Torch: vanilla's own torch/wall_torch cross-billboard shape, tintable, alongside
+    // the fully custom bracket-shaped torch above (same one-custom/one-vanilla-parity pairing as the
+    // two door families). Only the flame and the charred top of the stick tint; the rest of the stick
+    // stays a fixed real color -- see models/block/custom/tinted_vanilla_torch(_wall).json.
+    public static final DeferredBlock<Block> TINTED_VANILLA_TORCH = BLOCKS.register("tinted_vanilla_torch",
+            () -> new TintedVanillaTorchBlock(ParticleTypes.FLAME,
+                    Properties.of().noCollission().instabreak().lightLevel(state -> 14).sound(SoundType.WOOD).pushReaction(PushReaction.DESTROY)));
+    public static final DeferredBlock<Block> TINTED_VANILLA_WALL_TORCH = BLOCKS.register("tinted_vanilla_wall_torch",
+            () -> new TintedVanillaWallTorchBlock(ParticleTypes.FLAME,
+                    Properties.of().noCollission().instabreak().lightLevel(state -> 14).sound(SoundType.WOOD)
+                            .dropsLike(TINTED_VANILLA_TORCH.get()).pushReaction(PushReaction.DESTROY)));
+
+    public static final DeferredItem<TintableStandingAndWallBlockItem> TINTED_VANILLA_TORCH_ITEM = ITEMS.register("tinted_vanilla_torch",
+            () -> new TintableStandingAndWallBlockItem(TINTED_VANILLA_TORCH.get(), TINTED_VANILLA_WALL_TORCH.get(), new Item.Properties(), Direction.DOWN));
+
+    // Shared with the custom torch's own block entity type -- both just store a color, no torch-shape-specific behavior.
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TintedTorchBlockEntity>> TINTED_TORCH_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
-            "tinted_torch", () -> BlockEntityType.Builder.of(TintedTorchBlockEntity::new, TINTED_FLOOR_TORCH.get(), TINTED_WALL_TORCH.get()).build(null));
+            "tinted_torch", () -> BlockEntityType.Builder.of(TintedTorchBlockEntity::new,
+                    TINTED_FLOOR_TORCH.get(), TINTED_WALL_TORCH.get(),
+                    TINTED_VANILLA_TORCH.get(), TINTED_VANILLA_WALL_TORCH.get()).build(null));
 
     // Tinted Planks: a plain tintable cube plus its stairs/slab/fence/fence-gate shape variants.
     // Base cube + slab blockstates/models are datagen'd (TintedDataGenerators); stairs/fence/fence
@@ -215,19 +248,18 @@ public class TintedFullSpectrum {
             .withTabsBefore(CreativeModeTabs.COMBAT)
             .icon(() -> CHROMA_ALEMBIC_ITEM.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
+                // Only items this mod personally originated go in this tab: the custom-geometry
+                // Tinted Torch, the Hourglass Door, the Chroma Alembic, and the two dyes. Every
+                // vanilla-parity conversion output (Tinted Vanilla Torch, all 5 Tinted Planks shapes,
+                // all 12 Tinted Door materials) is deliberately excluded -- those are only ever meant
+                // to be obtained by converting the matching vanilla item + a Colored Dye (see
+                // ConvertAndDyeRecipe), not browsed/taken blank from creative.
                 output.accept(TINTED_TORCH_ITEM.get());
-                output.accept(TINTED_PLANKS_ITEM.get());
-                output.accept(TINTED_PLANKS_STAIRS_ITEM.get());
-                output.accept(TINTED_PLANKS_SLAB_ITEM.get());
-                output.accept(TINTED_PLANKS_FENCE_ITEM.get());
-                output.accept(TINTED_PLANKS_FENCE_GATE_ITEM.get());
                 output.accept(HOURGLASS_DOOR_ITEM.get());
-                for (DeferredItem<TintableBlockItem> item : TINTED_DOOR_ITEMS.values()) {
-                    output.accept(item.get());
-                }
                 output.accept(CHROMA_ALEMBIC_ITEM.get());
                 output.accept(BLANK_DYE_ITEM.get());
-                output.accept(COLORED_DYE_ITEM.get());
+                // COLORED_DYE_ITEM deliberately not listed -- it's the Chroma Alembic's OUTPUT (any
+                // RGB a player mixes), not a pre-made item to browse; Blank Dye is the raw input.
             }).build());
 
     // FML recognizes some parameter types like IEventBus or ModContainer and passes them in automatically.
@@ -239,33 +271,17 @@ public class TintedFullSpectrum {
         MENU_TYPES.register(modEventBus);
         RECIPE_SERIALIZERS.register(modEventBus);
         DATA_COMPONENTS.register(modEventBus);
+        PARTICLE_TYPES.register(modEventBus);
 
         // Register the Chroma Alembic's client->server "Selected" color payload
         modEventBus.addListener(this::registerPayloads);
 
-        modEventBus.addListener(this::addCreative);
         modEventBus.addListener(TintedDataGenerators::gatherData);
     }
 
-    private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
-            event.accept(TINTED_TORCH_ITEM);
-            event.accept(TINTED_PLANKS_ITEM);
-            event.accept(TINTED_PLANKS_STAIRS_ITEM);
-            event.accept(TINTED_PLANKS_SLAB_ITEM);
-            event.accept(TINTED_PLANKS_FENCE_ITEM);
-            event.accept(TINTED_PLANKS_FENCE_GATE_ITEM);
-            // HOURGLASS_DOOR_ITEM deliberately NOT also added here (unlike everything else in this
-            // method) -- being in both this vanilla tab AND our own MAIN_TAB simultaneously is the
-            // suspected cause of its creative-tab icon rendering blank (component count/tooltip
-            // showed it tagged with both tab names at once, unlike every other item here). Testing
-            // whether removing the duplicate tab membership fixes it before assuming this for others.
-            for (DeferredItem<TintableBlockItem> item : TINTED_DOOR_ITEMS.values()) {
-                event.accept(item);
-            }
-            event.accept(CHROMA_ALEMBIC_ITEM);
-        }
-    }
+    // Deliberately no BuildCreativeModeTabContentsEvent listener -- nothing from this mod belongs in
+    // any vanilla creative tab (Building Blocks, Ingredients, etc). Every item this mod has to offer
+    // is reachable from MAIN_TAB.displayItems above, and only from there.
 
     private void registerPayloads(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar("1");

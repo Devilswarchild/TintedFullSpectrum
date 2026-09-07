@@ -83,6 +83,30 @@ public class TintedFullSpectrumClient {
         }, doorItemsArray());
 
         event.register((stack, tintIndex) -> 0xFFFFFF, TintedFullSpectrum.CHROMA_ALEMBIC_ITEM.get());
+
+        // The original (custom-geometry) Tinted Torch: same "show a natural color instead of flat
+        // white for the undyed template instance" polish as doors -- a real crafted stack always has
+        // TINT_COLOR explicitly set (even to white, via the blank recipe), so its absence means this
+        // is the creative-tab/JEI/recipe-book template, not a real item.
+        event.register((stack, tintIndex) -> {
+            if (stack.has(TintedFullSpectrum.TINT_COLOR.get())) {
+                return TintColorComponent.getOrDefault(stack, TintColorComponent.DEFAULT_COLOR);
+            }
+            return 0xFFD800;
+        }, TintedFullSpectrum.TINTED_TORCH_ITEM.get());
+
+        // The vanilla-parity Torch's flat item icon is two stacked layers (see
+        // models/item/tinted_vanilla_torch.json): layer0 is the plain-wood stick, always shown in its
+        // own real painted color, never multiplied; layer1 is the flame + charred stick-top, which
+        // does tint. A single tintIndex-agnostic handler (like tintableItemsArray() below) can't
+        // express "layer0 never tints" -- it always returns the same value for every layer -- so this
+        // item needs its own handler that branches on tintIndex instead.
+        event.register((stack, tintIndex) -> {
+            if (tintIndex == 0) {
+                return 0xFFFFFF;
+            }
+            return TintColorComponent.getOrDefault(stack, TintColorComponent.DEFAULT_COLOR);
+        }, TintedFullSpectrum.TINTED_VANILLA_TORCH_ITEM.get());
     }
 
     // Average pixel color of each material's real vanilla door texture (computed once from the
@@ -111,6 +135,7 @@ public class TintedFullSpectrumClient {
     private static net.minecraft.world.level.block.Block[] tintableBlocksArray() {
         java.util.List<net.minecraft.world.level.block.Block> blocks = new java.util.ArrayList<>(java.util.List.of(
                 TintedFullSpectrum.TINTED_FLOOR_TORCH.get(), TintedFullSpectrum.TINTED_WALL_TORCH.get(),
+                TintedFullSpectrum.TINTED_VANILLA_TORCH.get(), TintedFullSpectrum.TINTED_VANILLA_WALL_TORCH.get(),
                 TintedFullSpectrum.TINTED_PLANKS.get(), TintedFullSpectrum.TINTED_PLANKS_STAIRS.get(),
                 TintedFullSpectrum.TINTED_PLANKS_SLAB.get(), TintedFullSpectrum.TINTED_PLANKS_FENCE.get(),
                 TintedFullSpectrum.TINTED_PLANKS_FENCE_GATE.get(), TintedFullSpectrum.HOURGLASS_DOOR.get()));
@@ -122,7 +147,7 @@ public class TintedFullSpectrumClient {
 
     private static net.minecraft.world.item.Item[] tintableItemsArray() {
         return new net.minecraft.world.item.Item[] {
-                TintedFullSpectrum.TINTED_TORCH_ITEM.get(), TintedFullSpectrum.COLORED_DYE_ITEM.get(),
+                TintedFullSpectrum.COLORED_DYE_ITEM.get(),
                 TintedFullSpectrum.TINTED_PLANKS_ITEM.get(), TintedFullSpectrum.TINTED_PLANKS_STAIRS_ITEM.get(),
                 TintedFullSpectrum.TINTED_PLANKS_SLAB_ITEM.get(), TintedFullSpectrum.TINTED_PLANKS_FENCE_ITEM.get(),
                 TintedFullSpectrum.TINTED_PLANKS_FENCE_GATE_ITEM.get(),
@@ -141,6 +166,11 @@ public class TintedFullSpectrumClient {
 
     // The static/platform halves aren't referenced by any blockstate (the placed block's model is
     // invisible; ChromaAlembicRenderer draws them directly), so they need to be side-loaded here.
+    @SubscribeEvent
+    static void onRegisterParticleProviders(net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent event) {
+        event.registerSpriteSet(TintedFullSpectrum.TINTED_FLAME_PARTICLE.get(), TintedFlameParticle.Provider::new);
+    }
+
     @SubscribeEvent
     static void onRegisterAdditionalModels(ModelEvent.RegisterAdditional event) {
         event.register(ChromaAlembicRenderer.STATIC_MODEL);
@@ -179,6 +209,13 @@ public class TintedFullSpectrumClient {
             for (var block : TintedFullSpectrum.TINTED_DOOR_BLOCKS.values()) {
                 ItemBlockRenderTypes.setRenderLayer(block.get(), RenderType.cutout());
             }
+            // Vanilla's own Blocks.TORCH/WALL_TORCH get cutout via ItemBlockRenderTypes's own hardcoded
+            // static init, but that's keyed by Block identity -- these are different Block instances, so
+            // they need the same registration explicitly, same as the doors above, or the in-world
+            // billboard mesh defaults to solid (ignores alpha, so the transparent padding around the
+            // stick/flame renders as opaque black instead of see-through).
+            ItemBlockRenderTypes.setRenderLayer(TintedFullSpectrum.TINTED_VANILLA_TORCH.get(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(TintedFullSpectrum.TINTED_VANILLA_WALL_TORCH.get(), RenderType.cutout());
         });
 
         allDoorBlocks = new java.util.HashSet<>();

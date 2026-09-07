@@ -11,23 +11,26 @@ import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.FenceBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
 
-// Takes ANY vanilla planks/wood stairs/slab/fence/fence gate/door (any of the ~11 wood types) plus a
-// Colored Dye, and outputs the equivalent Tinted shape in that dye's color -- one universal converter
-// rather than needing a separate blank-dye step to obtain the mod's own plain shape first. Which
-// vanilla item is "convertible" is determined by vanilla's own planks/wooden_stairs/wooden_slabs/
-// wooden_fences/fence_gates/wooden_doors tags; which Tinted shape it maps to is determined by the
-// input block's Java type (StairBlock/SlabBlock/FenceBlock/FenceGateBlock/DoorBlock, or plain Block
-// for planks themselves), not the tag, since the tags don't distinguish shape on their own. Note the
-// vanilla-parity Tinted Door maps here (plain door + dye, no extra ingredients). The Hourglass
-// Door is acquired completely differently -- a static shaped recipe (recipe/hourglass_door.json,
-// visible in JEI/EMI/REI) makes the blank door, then the generic RecolorRecipe (Colored Dye + any
-// TintableItem) colors it, same two-step pattern as the torch.
+// Takes ANY vanilla planks/wood stairs/slab/fence/fence gate/door/torch (any of the ~11 wood types,
+// plus the single vanilla torch) plus a Colored Dye, and outputs the equivalent Tinted shape in that
+// dye's color -- one universal converter rather than needing a separate blank-dye step to obtain the
+// mod's own plain shape first. Which vanilla item is "convertible" is determined by vanilla's own
+// planks/wooden_stairs/wooden_slabs/wooden_fences/fence_gates tags, or (for doors/torch, which have
+// no such convenient tag/type split) an exact Block check. Which Tinted shape it maps to is
+// determined by the input block's Java type (StairBlock/SlabBlock/FenceBlock/FenceGateBlock/
+// DoorBlock, or plain Block for planks/torch), not the tag, since the tags don't distinguish shape on
+// their own. Note the vanilla-parity Tinted Door and vanilla-parity Tinted Torch both map here (plain
+// vanilla item + dye, no extra ingredients, one step). The Hourglass Door and the original
+// custom-geometry Tinted Torch are acquired completely differently -- a static/plain recipe makes a
+// blank instance first, then the generic RecolorRecipe (Colored Dye + any TintableItem) colors it, a
+// two-step pattern.
 public class ConvertAndDyeRecipe extends CustomRecipe {
     public ConvertAndDyeRecipe(CraftingBookCategory category) {
         super(category);
@@ -89,6 +92,13 @@ public class ConvertAndDyeRecipe extends CustomRecipe {
                 || stack.is(ItemTags.FENCE_GATES)) {
             return true;
         }
+        // Vanilla's torch item is a BlockItem whose getBlock() is always Blocks.TORCH (the floor
+        // form) -- StandingAndWallBlockItem picks the wall block at placement time, not at the item
+        // level, so this single check covers both. Only one material exists here (unlike doors), so
+        // there's no need for a VANILLA_DOOR_MATERIAL-style lookup map, just this direct check.
+        if (stack.getItem() instanceof BlockItem torchItem && torchItem.getBlock() == Blocks.TORCH) {
+            return true;
+        }
         // Doors are convertible only if they're an exact match in VANILLA_DOOR_MATERIAL (not just
         // "any door" via ItemTags.DOORS) -- waxed copper doors are deliberately excluded there so
         // this recipe cleanly doesn't match for them, rather than matching and then producing an
@@ -102,7 +112,9 @@ public class ConvertAndDyeRecipe extends CustomRecipe {
             return null;
         }
         Block block = blockItem.getBlock();
-        if (block instanceof StairBlock) {
+        if (block == Blocks.TORCH) {
+            return TintedFullSpectrum.TINTED_VANILLA_TORCH_ITEM.get();
+        } else if (block instanceof StairBlock) {
             return TintedFullSpectrum.TINTED_PLANKS_STAIRS_ITEM.get();
         } else if (block instanceof SlabBlock) {
             return TintedFullSpectrum.TINTED_PLANKS_SLAB_ITEM.get();

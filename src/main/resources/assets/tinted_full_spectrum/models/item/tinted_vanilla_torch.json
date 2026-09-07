@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "tinted_full_spectrum:item/tinted_vanilla_torch_stick",
+    "layer1": "tinted_full_spectrum:item/tinted_vanilla_torch_flame"
+  }
+}
