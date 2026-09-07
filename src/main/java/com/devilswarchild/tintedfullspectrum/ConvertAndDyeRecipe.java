@@ -18,19 +18,20 @@ import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
 
-// Takes ANY vanilla planks/wood stairs/slab/fence/fence gate/door/torch (any of the ~11 wood types,
-// plus the single vanilla torch) plus a Colored Dye, and outputs the equivalent Tinted shape in that
-// dye's color -- one universal converter rather than needing a separate blank-dye step to obtain the
-// mod's own plain shape first. Which vanilla item is "convertible" is determined by vanilla's own
-// planks/wooden_stairs/wooden_slabs/wooden_fences/fence_gates tags, or (for doors/torch, which have
-// no such convenient tag/type split) an exact Block check. Which Tinted shape it maps to is
-// determined by the input block's Java type (StairBlock/SlabBlock/FenceBlock/FenceGateBlock/
-// DoorBlock, or plain Block for planks/torch), not the tag, since the tags don't distinguish shape on
-// their own. Note the vanilla-parity Tinted Door and vanilla-parity Tinted Torch both map here (plain
-// vanilla item + dye, no extra ingredients, one step). The Hourglass Door and the original
-// custom-geometry Tinted Torch are acquired completely differently -- a static/plain recipe makes a
-// blank instance first, then the generic RecolorRecipe (Colored Dye + any TintableItem) colors it, a
-// two-step pattern.
+// Takes ANY vanilla planks/wood stairs/slab/fence/fence gate/door/torch/grass block/short grass/tall
+// grass (any of the ~11 wood types, plus the single-material items) plus a Colored Dye, and outputs
+// the equivalent Tinted shape in that dye's color -- one universal converter rather than needing a
+// separate blank-dye step to obtain the mod's own plain shape first. Which vanilla item is
+// "convertible" is determined by vanilla's own planks/wooden_stairs/wooden_slabs/wooden_fences/
+// fence_gates tags, or (for doors/torch/grass, which have no such convenient tag/type split) an exact
+// Block check. Which Tinted shape it maps to is determined by the input block's Java type
+// (StairBlock/SlabBlock/FenceBlock/FenceGateBlock/DoorBlock, or plain Block for planks/torch/grass),
+// not the tag, since the tags don't distinguish shape on their own. Note the vanilla-parity Tinted
+// Door and every single-material vanilla-parity item (Torch, Grass Block, Short Grass, Tall Grass)
+// all map here (plain vanilla item + dye, no extra ingredients, one step). The Hourglass Door and the
+// original custom-geometry Tinted Torch are acquired completely differently -- a static/plain recipe
+// makes a blank instance first, then the generic RecolorRecipe (Colored Dye + any TintableItem)
+// colors it, a two-step pattern.
 public class ConvertAndDyeRecipe extends CustomRecipe {
     public ConvertAndDyeRecipe(CraftingBookCategory category) {
         super(category);
@@ -99,6 +100,13 @@ public class ConvertAndDyeRecipe extends CustomRecipe {
         if (stack.getItem() instanceof BlockItem torchItem && torchItem.getBlock() == Blocks.TORCH) {
             return true;
         }
+        // Grass Block / Short Grass / Tall Grass -- same single-material direct-check pattern as the
+        // torch (each is its own standalone convertible, no per-species map needed).
+        if (stack.getItem() instanceof BlockItem grassItem
+                && (grassItem.getBlock() == Blocks.GRASS_BLOCK || grassItem.getBlock() == Blocks.SHORT_GRASS
+                        || grassItem.getBlock() == Blocks.TALL_GRASS)) {
+            return true;
+        }
         // Doors are convertible only if they're an exact match in VANILLA_DOOR_MATERIAL (not just
         // "any door" via ItemTags.DOORS) -- waxed copper doors are deliberately excluded there so
         // this recipe cleanly doesn't match for them, rather than matching and then producing an
@@ -114,6 +122,12 @@ public class ConvertAndDyeRecipe extends CustomRecipe {
         Block block = blockItem.getBlock();
         if (block == Blocks.TORCH) {
             return TintedFullSpectrum.TINTED_VANILLA_TORCH_ITEM.get();
+        } else if (block == Blocks.GRASS_BLOCK) {
+            return TintedFullSpectrum.TINTED_GRASS_BLOCK_ITEM.get();
+        } else if (block == Blocks.SHORT_GRASS) {
+            return TintedFullSpectrum.TINTED_SHORT_GRASS_ITEM.get();
+        } else if (block == Blocks.TALL_GRASS) {
+            return TintedFullSpectrum.TINTED_TALL_GRASS_ITEM.get();
         } else if (block instanceof StairBlock) {
             return TintedFullSpectrum.TINTED_PLANKS_STAIRS_ITEM.get();
         } else if (block instanceof SlabBlock) {

@@ -209,6 +209,28 @@ public class TintedFullSpectrum {
                 return BlockEntityType.Builder.of(TintedDoorBlockEntity::new, valid.toArray(new Block[0])).build(null);
             });
 
+    // Vanilla-parity Grass Block / Short Grass / Tall Grass -- each a direct extension of vanilla's
+    // own class (GrassBlock/TallGrassBlock/DoublePlantBlock), so spreading, dying without light,
+    // bonemeal, and shearing all still work exactly like the real thing, just tintable. Only one
+    // material each (unlike the 12-material door family), so no per-material map/loop is needed.
+    public static final DeferredBlock<Block> TINTED_GRASS_BLOCK = BLOCKS.register("tinted_grass_block",
+            () -> new TintedGrassBlock(Properties.ofFullCopy(Blocks.GRASS_BLOCK)));
+    public static final DeferredBlock<Block> TINTED_SHORT_GRASS = BLOCKS.register("tinted_short_grass",
+            () -> new TintedShortGrassBlock(Properties.ofFullCopy(Blocks.SHORT_GRASS)));
+    public static final DeferredBlock<Block> TINTED_TALL_GRASS = BLOCKS.register("tinted_tall_grass",
+            () -> new TintedTallGrassBlock(Properties.ofFullCopy(Blocks.TALL_GRASS)));
+
+    public static final DeferredItem<TintableBlockItem> TINTED_GRASS_BLOCK_ITEM = ITEMS.register("tinted_grass_block",
+            () -> new TintableBlockItem(TINTED_GRASS_BLOCK.get(), new Item.Properties()));
+    public static final DeferredItem<TintableBlockItem> TINTED_SHORT_GRASS_ITEM = ITEMS.register("tinted_short_grass",
+            () -> new TintableBlockItem(TINTED_SHORT_GRASS.get(), new Item.Properties()));
+    public static final DeferredItem<TintableDoubleHighBlockItem> TINTED_TALL_GRASS_ITEM = ITEMS.register("tinted_tall_grass",
+            () -> new TintableDoubleHighBlockItem(TINTED_TALL_GRASS.get(), new Item.Properties()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TintedGrassBlockEntity>> TINTED_GRASS_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "tinted_grass", () -> BlockEntityType.Builder.of(TintedGrassBlockEntity::new,
+                    TINTED_GRASS_BLOCK.get(), TINTED_SHORT_GRASS.get(), TINTED_TALL_GRASS.get()).build(null));
+
     // The Chroma Alembic: faces the player at placement like a furnace; right-click opens the
     // dye-crafting GUI. See chroma_alembic_full_build.md.
     public static final DeferredBlock<Block> CHROMA_ALEMBIC = BLOCKS.register("chroma_alembic",

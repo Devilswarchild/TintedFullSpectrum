@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "half=lower": { "model": "tinted_full_spectrum:block/tinted_tall_grass_bottom" },
+    "half=upper": { "model": "tinted_full_spectrum:block/tinted_tall_grass_top" }
+  }
+}

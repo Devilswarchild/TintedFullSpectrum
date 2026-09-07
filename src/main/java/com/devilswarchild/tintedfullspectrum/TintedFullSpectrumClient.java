@@ -138,7 +138,9 @@ public class TintedFullSpectrumClient {
                 TintedFullSpectrum.TINTED_VANILLA_TORCH.get(), TintedFullSpectrum.TINTED_VANILLA_WALL_TORCH.get(),
                 TintedFullSpectrum.TINTED_PLANKS.get(), TintedFullSpectrum.TINTED_PLANKS_STAIRS.get(),
                 TintedFullSpectrum.TINTED_PLANKS_SLAB.get(), TintedFullSpectrum.TINTED_PLANKS_FENCE.get(),
-                TintedFullSpectrum.TINTED_PLANKS_FENCE_GATE.get(), TintedFullSpectrum.HOURGLASS_DOOR.get()));
+                TintedFullSpectrum.TINTED_PLANKS_FENCE_GATE.get(), TintedFullSpectrum.HOURGLASS_DOOR.get(),
+                TintedFullSpectrum.TINTED_GRASS_BLOCK.get(), TintedFullSpectrum.TINTED_SHORT_GRASS.get(),
+                TintedFullSpectrum.TINTED_TALL_GRASS.get()));
         for (var block : TintedFullSpectrum.TINTED_DOOR_BLOCKS.values()) {
             blocks.add(block.get());
         }
@@ -151,6 +153,8 @@ public class TintedFullSpectrumClient {
                 TintedFullSpectrum.TINTED_PLANKS_ITEM.get(), TintedFullSpectrum.TINTED_PLANKS_STAIRS_ITEM.get(),
                 TintedFullSpectrum.TINTED_PLANKS_SLAB_ITEM.get(), TintedFullSpectrum.TINTED_PLANKS_FENCE_ITEM.get(),
                 TintedFullSpectrum.TINTED_PLANKS_FENCE_GATE_ITEM.get(),
+                TintedFullSpectrum.TINTED_GRASS_BLOCK_ITEM.get(), TintedFullSpectrum.TINTED_SHORT_GRASS_ITEM.get(),
+                TintedFullSpectrum.TINTED_TALL_GRASS_ITEM.get(),
         };
     }
 
@@ -216,6 +220,11 @@ public class TintedFullSpectrumClient {
             // stick/flame renders as opaque black instead of see-through).
             ItemBlockRenderTypes.setRenderLayer(TintedFullSpectrum.TINTED_VANILLA_TORCH.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(TintedFullSpectrum.TINTED_VANILLA_WALL_TORCH.get(), RenderType.cutout());
+            // Same reasoning, matching vanilla's own registration for each real block (Blocks.GRASS_BLOCK
+            // -> cutoutMipped, Blocks.SHORT_GRASS/TALL_GRASS -> cutout).
+            ItemBlockRenderTypes.setRenderLayer(TintedFullSpectrum.TINTED_GRASS_BLOCK.get(), RenderType.cutoutMipped());
+            ItemBlockRenderTypes.setRenderLayer(TintedFullSpectrum.TINTED_SHORT_GRASS.get(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(TintedFullSpectrum.TINTED_TALL_GRASS.get(), RenderType.cutout());
         });
 
         allDoorBlocks = new java.util.HashSet<>();

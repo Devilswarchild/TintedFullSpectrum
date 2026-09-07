@@ -7,6 +7,13 @@
   "block.tinted_full_spectrum.tinted_vanilla_torch": "Tinted Vanilla Torch",
   "item.tinted_full_spectrum.tinted_vanilla_torch": "Tinted Vanilla Torch",
 
+  "block.tinted_full_spectrum.tinted_grass_block": "Tinted Grass Block",
+  "item.tinted_full_spectrum.tinted_grass_block": "Tinted Grass Block",
+  "block.tinted_full_spectrum.tinted_short_grass": "Tinted Short Grass",
+  "item.tinted_full_spectrum.tinted_short_grass": "Tinted Short Grass",
+  "block.tinted_full_spectrum.tinted_tall_grass": "Tinted Tall Grass",
+  "item.tinted_full_spectrum.tinted_tall_grass": "Tinted Tall Grass",
+
   "block.tinted_full_spectrum.tinted_planks": "Tinted Planks",
   "block.tinted_full_spectrum.tinted_planks_stairs": "Tinted Planks Stairs",
   "block.tinted_full_spectrum.tinted_planks_slab": "Tinted Planks Slab",
