@@ -14,6 +14,11 @@
   "block.tinted_full_spectrum.tinted_tall_grass": "Tinted Tall Grass",
   "item.tinted_full_spectrum.tinted_tall_grass": "Tinted Tall Grass",
 
+  "block.tinted_full_spectrum.tinted_wool": "Tinted Wool",
+  "item.tinted_full_spectrum.tinted_wool": "Tinted Wool",
+  "block.tinted_full_spectrum.tinted_carpet": "Tinted Carpet",
+  "item.tinted_full_spectrum.tinted_carpet": "Tinted Carpet",
+
   "block.tinted_full_spectrum.tinted_planks": "Tinted Planks",
   "block.tinted_full_spectrum.tinted_planks_stairs": "Tinted Planks Stairs",
   "block.tinted_full_spectrum.tinted_planks_slab": "Tinted Planks Slab",

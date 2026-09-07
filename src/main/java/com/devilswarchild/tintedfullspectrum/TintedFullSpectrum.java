@@ -231,6 +231,23 @@ public class TintedFullSpectrum {
             "tinted_grass", () -> BlockEntityType.Builder.of(TintedGrassBlockEntity::new,
                     TINTED_GRASS_BLOCK.get(), TINTED_SHORT_GRASS.get(), TINTED_TALL_GRASS.get()).build(null));
 
+    // Vanilla-parity Wool / Carpet -- vanilla itself has 16 separately-painted colors for each with
+    // no shared tinting mechanism, so this is arguably more "vanilla-parity in spirit" than in
+    // mechanism: one tintable block covers what vanilla needed 16 fixed textures for.
+    public static final DeferredBlock<Block> TINTED_WOOL = BLOCKS.register("tinted_wool",
+            () -> new TintedWoolBlock(Properties.ofFullCopy(Blocks.WHITE_WOOL)));
+    public static final DeferredBlock<Block> TINTED_CARPET = BLOCKS.register("tinted_carpet",
+            () -> new TintedCarpetBlock(Properties.ofFullCopy(Blocks.WHITE_CARPET)));
+
+    public static final DeferredItem<TintableBlockItem> TINTED_WOOL_ITEM = ITEMS.register("tinted_wool",
+            () -> new TintableBlockItem(TINTED_WOOL.get(), new Item.Properties()));
+    public static final DeferredItem<TintableBlockItem> TINTED_CARPET_ITEM = ITEMS.register("tinted_carpet",
+            () -> new TintableBlockItem(TINTED_CARPET.get(), new Item.Properties()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TintedWoolBlockEntity>> TINTED_WOOL_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "tinted_wool", () -> BlockEntityType.Builder.of(TintedWoolBlockEntity::new,
+                    TINTED_WOOL.get(), TINTED_CARPET.get()).build(null));
+
     // The Chroma Alembic: faces the player at placement like a furnace; right-click opens the
     // dye-crafting GUI. See chroma_alembic_full_build.md.
     public static final DeferredBlock<Block> CHROMA_ALEMBIC = BLOCKS.register("chroma_alembic",
@@ -263,6 +280,14 @@ public class TintedFullSpectrum {
     // Tinted Planks shape in that color -- see ConvertAndDyeRecipe.
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<ConvertAndDyeRecipe>> CONVERT_AND_DYE_SERIALIZER = RECIPE_SERIALIZERS.register(
             "convert_and_dye", () -> new SimpleCraftingRecipeSerializer<>(ConvertAndDyeRecipe::new));
+
+    // 2 Tinted Wool (same color) -> 3 Tinted Carpet (that color) -- see WoolToCarpetRecipe.
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<WoolToCarpetRecipe>> WOOL_TO_CARPET_SERIALIZER = RECIPE_SERIALIZERS.register(
+            "wool_to_carpet", () -> new SimpleCraftingRecipeSerializer<>(WoolToCarpetRecipe::new));
+
+    // 4 String + Colored Dye -> Tinted Wool -- see StringToWoolRecipe.
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<StringToWoolRecipe>> STRING_TO_WOOL_SERIALIZER = RECIPE_SERIALIZERS.register(
+            "string_to_wool", () -> new SimpleCraftingRecipeSerializer<>(StringToWoolRecipe::new));
 
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN_TAB = CREATIVE_MODE_TABS.register("main", () -> CreativeModeTab.builder()

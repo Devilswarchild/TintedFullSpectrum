@@ -1,6 +1,7 @@
 package com.devilswarchild.tintedfullspectrum;
 
 import net.minecraft.core.HolderLookup;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -12,6 +13,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CarpetBlock;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.FenceBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
@@ -19,19 +21,21 @@ import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
 
 // Takes ANY vanilla planks/wood stairs/slab/fence/fence gate/door/torch/grass block/short grass/tall
-// grass (any of the ~11 wood types, plus the single-material items) plus a Colored Dye, and outputs
-// the equivalent Tinted shape in that dye's color -- one universal converter rather than needing a
-// separate blank-dye step to obtain the mod's own plain shape first. Which vanilla item is
-// "convertible" is determined by vanilla's own planks/wooden_stairs/wooden_slabs/wooden_fences/
-// fence_gates tags, or (for doors/torch/grass, which have no such convenient tag/type split) an exact
-// Block check. Which Tinted shape it maps to is determined by the input block's Java type
-// (StairBlock/SlabBlock/FenceBlock/FenceGateBlock/DoorBlock, or plain Block for planks/torch/grass),
-// not the tag, since the tags don't distinguish shape on their own. Note the vanilla-parity Tinted
-// Door and every single-material vanilla-parity item (Torch, Grass Block, Short Grass, Tall Grass)
-// all map here (plain vanilla item + dye, no extra ingredients, one step). The Hourglass Door and the
-// original custom-geometry Tinted Torch are acquired completely differently -- a static/plain recipe
-// makes a blank instance first, then the generic RecolorRecipe (Colored Dye + any TintableItem)
-// colors it, a two-step pattern.
+// grass/wool/carpet (any of the ~11 wood types or 16 dye colors, plus the single-material items) plus
+// a Colored Dye, and outputs the equivalent Tinted shape in that dye's color -- one universal
+// converter rather than needing a separate blank-dye step to obtain the mod's own plain shape first.
+// Which vanilla item is "convertible" is determined by vanilla's own planks/wooden_stairs/
+// wooden_slabs/wooden_fences/fence_gates/wool/wool_carpets tags, or (for doors/torch/grass, which
+// have no such convenient tag/type split) an exact Block check. Which Tinted shape it maps to is
+// determined by the input block's Java type (StairBlock/SlabBlock/FenceBlock/FenceGateBlock/
+// DoorBlock/CarpetBlock, or plain Block for planks/torch/grass/wool), not the tag, since the tags
+// don't distinguish shape on their own (wool in particular needs a tag check here too, since its
+// Block class is generic). Note the vanilla-parity Tinted Door and every single-material
+// vanilla-parity item (Torch, Grass Block, Short Grass, Tall Grass, Wool, Carpet) all map here (plain
+// vanilla item + dye, no extra ingredients, one step). The Hourglass Door and the original
+// custom-geometry Tinted Torch are acquired completely differently -- a static/plain recipe makes a
+// blank instance first, then the generic RecolorRecipe (Colored Dye + any TintableItem) colors it, a
+// two-step pattern.
 public class ConvertAndDyeRecipe extends CustomRecipe {
     public ConvertAndDyeRecipe(CraftingBookCategory category) {
         super(category);
@@ -90,7 +94,7 @@ public class ConvertAndDyeRecipe extends CustomRecipe {
     private static boolean isConvertible(ItemStack stack) {
         if (stack.is(ItemTags.PLANKS) || stack.is(ItemTags.WOODEN_STAIRS)
                 || stack.is(ItemTags.WOODEN_SLABS) || stack.is(ItemTags.WOODEN_FENCES)
-                || stack.is(ItemTags.FENCE_GATES)) {
+                || stack.is(ItemTags.FENCE_GATES) || stack.is(ItemTags.WOOL) || stack.is(ItemTags.WOOL_CARPETS)) {
             return true;
         }
         // Vanilla's torch item is a BlockItem whose getBlock() is always Blocks.TORCH (the floor
@@ -128,6 +132,14 @@ public class ConvertAndDyeRecipe extends CustomRecipe {
             return TintedFullSpectrum.TINTED_SHORT_GRASS_ITEM.get();
         } else if (block == Blocks.TALL_GRASS) {
             return TintedFullSpectrum.TINTED_TALL_GRASS_ITEM.get();
+        } else if (block instanceof CarpetBlock) {
+            // Checked before the WOOL tag below since carpet isn't in that tag, but the order doesn't
+            // actually matter -- the two tags are mutually exclusive.
+            return TintedFullSpectrum.TINTED_CARPET_ITEM.get();
+        } else if (block.defaultBlockState().is(BlockTags.WOOL)) {
+            // Wool has no distinguishing Java class (just a plain Block, all 16 colors), unlike
+            // carpet -- has to be a tag check instead of instanceof.
+            return TintedFullSpectrum.TINTED_WOOL_ITEM.get();
         } else if (block instanceof StairBlock) {
             return TintedFullSpectrum.TINTED_PLANKS_STAIRS_ITEM.get();
         } else if (block instanceof SlabBlock) {
