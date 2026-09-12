@@ -5,27 +5,37 @@ import org.slf4j.Logger;
 import com.mojang.logging.LogUtils;
 
 import net.minecraft.core.Direction;
+import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.block.SoundType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -248,6 +258,16 @@ public class TintedFullSpectrum {
             "tinted_wool", () -> BlockEntityType.Builder.of(TintedWoolBlockEntity::new,
                     TINTED_WOOL.get(), TINTED_CARPET.get()).build(null));
 
+    // Chroma Glass Pane: vanilla-parity glass pane, panes only (no solid glass block -- deliberate
+    // scope call, see tinted_full_spectrum_glass_handoff.md). Named to avoid colliding in spirit with
+    // vanilla's own real minecraft:tinted_glass (the copper-frosted block).
+    public static final DeferredBlock<Block> CHROMA_GLASS_PANE = BLOCKS.register("chroma_glass_pane",
+            () -> new ChromaGlassPaneBlock(Properties.ofFullCopy(Blocks.GLASS_PANE)));
+    public static final DeferredItem<TintableBlockItem> CHROMA_GLASS_PANE_ITEM = ITEMS.register("chroma_glass_pane",
+            () -> new TintableBlockItem(CHROMA_GLASS_PANE.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ChromaGlassPaneBlockEntity>> CHROMA_GLASS_PANE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "chroma_glass_pane", () -> BlockEntityType.Builder.of(ChromaGlassPaneBlockEntity::new, CHROMA_GLASS_PANE.get()).build(null));
+
     // The Chroma Alembic: faces the player at placement like a furnace; right-click opens the
     // dye-crafting GUI. See chroma_alembic_full_build.md.
     public static final DeferredBlock<Block> CHROMA_ALEMBIC = BLOCKS.register("chroma_alembic",
@@ -265,6 +285,12 @@ public class TintedFullSpectrum {
     // ItemColor handler instead of the fixed 16-color DyeColor enum.
     public static final DeferredItem<Item> BLANK_DYE_ITEM = ITEMS.registerSimpleItem("blank_dye", new Item.Properties());
     public static final DeferredItem<ColoredDyeItem> COLORED_DYE_ITEM = ITEMS.register("colored_dye", () -> new ColoredDyeItem(new Item.Properties()));
+
+    // Blank Dye's own acquisition chain: smelt Bone -> Bone Ash, wet it in a water cauldron -> Dye
+    // Paste (see CauldronInteraction registration in the constructor), smelt that -> Blank Dye
+    // (drying it out). Both are plain intermediate items, no special behavior of their own.
+    public static final DeferredItem<Item> BONE_ASH_ITEM = ITEMS.registerSimpleItem("bone_ash", new Item.Properties());
+    public static final DeferredItem<Item> DYE_PASTE_ITEM = ITEMS.registerSimpleItem("dye_paste", new Item.Properties());
 
     // Applies a Colored Dye's stored RGB to a vanilla DYEABLE item via crafting (see
     // ColoredDyeApplyRecipe) -- ColoredDyeItem#useOn handles the block-targeted case (right-click).
@@ -289,6 +315,10 @@ public class TintedFullSpectrum {
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<StringToWoolRecipe>> STRING_TO_WOOL_SERIALIZER = RECIPE_SERIALIZERS.register(
             "string_to_wool", () -> new SimpleCraftingRecipeSerializer<>(StringToWoolRecipe::new));
 
+    // 8 glass pane + Colored Dye -> 8 Chroma Glass Pane -- see ChromaGlassPaneRecipe.
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<ChromaGlassPaneRecipe>> CHROMA_GLASS_PANE_SERIALIZER = RECIPE_SERIALIZERS.register(
+            "chroma_glass_pane", () -> new SimpleCraftingRecipeSerializer<>(ChromaGlassPaneRecipe::new));
+
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN_TAB = CREATIVE_MODE_TABS.register("main", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.tinted_full_spectrum"))
@@ -304,6 +334,8 @@ public class TintedFullSpectrum {
                 output.accept(TINTED_TORCH_ITEM.get());
                 output.accept(HOURGLASS_DOOR_ITEM.get());
                 output.accept(CHROMA_ALEMBIC_ITEM.get());
+                output.accept(BONE_ASH_ITEM.get());
+                output.accept(DYE_PASTE_ITEM.get());
                 output.accept(BLANK_DYE_ITEM.get());
                 // COLORED_DYE_ITEM deliberately not listed -- it's the Chroma Alembic's OUTPUT (any
                 // RGB a player mixes), not a pre-made item to browse; Blank Dye is the raw input.
@@ -323,6 +355,8 @@ public class TintedFullSpectrum {
         // Register the Chroma Alembic's client->server "Selected" color payload
         modEventBus.addListener(this::registerPayloads);
 
+        modEventBus.addListener(this::commonSetup);
+
         modEventBus.addListener(TintedDataGenerators::gatherData);
     }
 
@@ -333,5 +367,26 @@ public class TintedFullSpectrum {
     private void registerPayloads(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar("1");
         registrar.playToServer(ChromaAlembicSetColorPayload.TYPE, ChromaAlembicSetColorPayload.STREAM_CODEC, ChromaAlembicSetColorPayload::handle);
+    }
+
+    // Right-clicking Bone Ash into a water cauldron wets it into Dye Paste -- the middle step of Blank
+    // Dye's acquisition chain (smelt Bone -> Bone Ash -> [this] -> Dye Paste -> smelt -> Blank Dye).
+    // Mirrors vanilla's own CauldronInteraction.WATER entries (e.g. the GLASS_BOTTLE -> water-bottle
+    // interaction) closely: consumes one cauldron water level, transforms exactly one item out of the
+    // held stack (not the whole stack), server-side only.
+    private void commonSetup(FMLCommonSetupEvent event) {
+        event.enqueueWork(() -> CauldronInteraction.WATER.map().put(BONE_ASH_ITEM.get(),
+                (state, level, pos, player, hand, stack) -> {
+                    if (!level.isClientSide) {
+                        Item item = stack.getItem();
+                        player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, new ItemStack(DYE_PASTE_ITEM.get())));
+                        player.awardStat(Stats.USE_CAULDRON);
+                        player.awardStat(Stats.ITEM_USED.get(item));
+                        LayeredCauldronBlock.lowerFillLevel(state, level, pos);
+                        level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);
+                        level.gameEvent(null, GameEvent.FLUID_PICKUP, pos);
+                    }
+                    return ItemInteractionResult.sidedSuccess(level.isClientSide);
+                }));
     }
 }

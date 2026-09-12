@@ -1,6 +1,9 @@
 {
   "itemGroup.tinted_full_spectrum": "Tinted: Full Spectrum",
 
+  "item.tinted_full_spectrum.bone_ash": "Bone Ash",
+  "item.tinted_full_spectrum.dye_paste": "Dye Paste",
+
   "block.tinted_full_spectrum.tinted_floor_torch": "Tinted Torch",
   "item.tinted_full_spectrum.tinted_torch": "Tinted Torch",
 
@@ -18,6 +21,9 @@
   "item.tinted_full_spectrum.tinted_wool": "Tinted Wool",
   "block.tinted_full_spectrum.tinted_carpet": "Tinted Carpet",
   "item.tinted_full_spectrum.tinted_carpet": "Tinted Carpet",
+
+  "block.tinted_full_spectrum.chroma_glass_pane": "Chroma Glass Pane",
+  "item.tinted_full_spectrum.chroma_glass_pane": "Chroma Glass Pane",
 
   "block.tinted_full_spectrum.tinted_planks": "Tinted Planks",
   "block.tinted_full_spectrum.tinted_planks_stairs": "Tinted Planks Stairs",

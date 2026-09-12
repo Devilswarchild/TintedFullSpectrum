@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 0.1,
+  "ingredient": {
+    "item": "tinted_full_spectrum:dye_paste"
+  },
+  "result": {
+    "id": "tinted_full_spectrum:blank_dye"
+  }
+}

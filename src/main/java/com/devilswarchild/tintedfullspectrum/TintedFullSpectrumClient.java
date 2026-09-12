@@ -141,7 +141,7 @@ public class TintedFullSpectrumClient {
                 TintedFullSpectrum.TINTED_PLANKS_FENCE_GATE.get(), TintedFullSpectrum.HOURGLASS_DOOR.get(),
                 TintedFullSpectrum.TINTED_GRASS_BLOCK.get(), TintedFullSpectrum.TINTED_SHORT_GRASS.get(),
                 TintedFullSpectrum.TINTED_TALL_GRASS.get(), TintedFullSpectrum.TINTED_WOOL.get(),
-                TintedFullSpectrum.TINTED_CARPET.get()));
+                TintedFullSpectrum.TINTED_CARPET.get(), TintedFullSpectrum.CHROMA_GLASS_PANE.get()));
         for (var block : TintedFullSpectrum.TINTED_DOOR_BLOCKS.values()) {
             blocks.add(block.get());
         }
@@ -156,7 +156,7 @@ public class TintedFullSpectrumClient {
                 TintedFullSpectrum.TINTED_PLANKS_FENCE_GATE_ITEM.get(),
                 TintedFullSpectrum.TINTED_GRASS_BLOCK_ITEM.get(), TintedFullSpectrum.TINTED_SHORT_GRASS_ITEM.get(),
                 TintedFullSpectrum.TINTED_TALL_GRASS_ITEM.get(), TintedFullSpectrum.TINTED_WOOL_ITEM.get(),
-                TintedFullSpectrum.TINTED_CARPET_ITEM.get(),
+                TintedFullSpectrum.TINTED_CARPET_ITEM.get(), TintedFullSpectrum.CHROMA_GLASS_PANE_ITEM.get(),
         };
     }
 
@@ -227,6 +227,11 @@ public class TintedFullSpectrumClient {
             ItemBlockRenderTypes.setRenderLayer(TintedFullSpectrum.TINTED_GRASS_BLOCK.get(), RenderType.cutoutMipped());
             ItemBlockRenderTypes.setRenderLayer(TintedFullSpectrum.TINTED_SHORT_GRASS.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(TintedFullSpectrum.TINTED_TALL_GRASS.get(), RenderType.cutout());
+            // Matches vanilla's own choice for stained glass panes specifically (translucent, not the
+            // cutoutMipped plain Blocks.GLASS_PANE uses) -- the pane texture has genuine partial-alpha
+            // gradations (border/interior/shine flecks), not just a hard 0/255 cutoff, so cutout would
+            // threshold it to fully opaque and lose the see-through glass look entirely.
+            ItemBlockRenderTypes.setRenderLayer(TintedFullSpectrum.CHROMA_GLASS_PANE.get(), RenderType.translucent());
         });
 
         allDoorBlocks = new java.util.HashSet<>();
