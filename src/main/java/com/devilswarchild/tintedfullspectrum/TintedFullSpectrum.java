@@ -258,6 +258,17 @@ public class TintedFullSpectrum {
             "tinted_wool", () -> BlockEntityType.Builder.of(TintedWoolBlockEntity::new,
                     TINTED_WOOL.get(), TINTED_CARPET.get()).build(null));
 
+    // Tinted Terracotta: vanilla-parity, plain Terracotta only -- Glazed Terracotta is explicitly out
+    // of scope, its per-color identity comes from a hand-designed directional mosaic pattern baked
+    // per color, structurally incompatible with arbitrary RGB (no finite palette to ever finish
+    // designing against). See tinted_full_spectrum_terracotta_handoff.md.
+    public static final DeferredBlock<Block> TINTED_TERRACOTTA = BLOCKS.register("tinted_terracotta",
+            () -> new TintedTerracottaBlock(Properties.ofFullCopy(Blocks.TERRACOTTA)));
+    public static final DeferredItem<TintableBlockItem> TINTED_TERRACOTTA_ITEM = ITEMS.register("tinted_terracotta",
+            () -> new TintableBlockItem(TINTED_TERRACOTTA.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TintedTerracottaBlockEntity>> TINTED_TERRACOTTA_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "tinted_terracotta", () -> BlockEntityType.Builder.of(TintedTerracottaBlockEntity::new, TINTED_TERRACOTTA.get()).build(null));
+
     // Chroma Glass Pane: vanilla-parity glass pane, panes only (no solid glass block -- deliberate
     // scope call, see tinted_full_spectrum_glass_handoff.md). Named to avoid colliding in spirit with
     // vanilla's own real minecraft:tinted_glass (the copper-frosted block).

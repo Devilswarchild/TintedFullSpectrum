@@ -21,17 +21,19 @@ import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
 
 // Takes N vanilla planks/wood stairs/slab/fence/fence gate/door/torch/grass block/short grass/tall
-// grass/wool/carpet (any of the ~11 wood types or 16 dye colors, plus the single-material items) plus
-// a Colored Dye, and outputs N of the equivalent Tinted shape in that dye's color -- one universal
-// converter rather than needing a separate blank-dye step to obtain the mod's own plain shape first.
-// N is per-shape, not always 1: it matches that vanilla item's own real crafting yield (4 planks per
-// log, 4 stairs, 6 slabs, 3 fence, 3 doors, 4 torches per craft) for shapes vanilla itself has no
-// dyeing mechanic for at all, so a dyed batch matches what one crafting action of the base material
-// would give you. Fence Gate stays 1:1 since vanilla's own recipe only ever yields 1. Wool and Carpet
-// also stay 1:1, but for a different reason -- vanilla genuinely DOES dye those, 1-for-1
-// (dye_white_wool.json et al), so that's not a gap to fill, it's already matched. Grass Block/Short
-// Grass/Tall Grass stay 1:1 too since vanilla has no crafting recipe for them at all (silk
-// touch/world gen only) -- no yield number exists to borrow.
+// grass/wool/carpet/terracotta (any of the ~11 wood types or 16 dye colors, plus the single-material
+// items) plus a Colored Dye, and outputs N of the equivalent Tinted shape in that dye's color -- one
+// universal converter rather than needing a separate blank-dye step to obtain the mod's own plain
+// shape first. N is per-shape, not always 1: for shapes vanilla itself has no dyeing mechanic for at
+// all, it matches that vanilla item's own real crafting yield (4 planks per log, 4 stairs, 6 slabs, 3
+// fence, 3 doors, 4 torches per craft), so a dyed batch matches what one crafting action of the base
+// material would give you. Fence Gate stays 1:1 since vanilla's own recipe only ever yields 1. Wool
+// and Carpet also stay 1:1, but for a different reason -- vanilla genuinely DOES dye those, 1-for-1
+// (dye_white_wool.json et al), so that's not a gap to fill, it's already matched. Terracotta uses 8,
+// matching vanilla's own real terracotta dye ratio (8 terracotta + 1 dye -> 8 colored, same as stained
+// glass) -- a THIRD distinct reason for a given batch size, not a gap-fill or a yield-borrow, just the
+// real number. Grass Block/Short Grass/Tall Grass stay 1:1 too since vanilla has no crafting recipe
+// for them at all (silk touch/world gen only) -- no yield number exists to borrow.
 //
 // Which vanilla item is "convertible" is determined by vanilla's own planks/wooden_stairs/
 // wooden_slabs/wooden_fences/fence_gates/wool/wool_carpets tags, or (for doors/torch/grass, which
@@ -136,6 +138,12 @@ public class ConvertAndDyeRecipe extends CustomRecipe {
                         || grassItem.getBlock() == Blocks.TALL_GRASS)) {
             return true;
         }
+        // Plain Terracotta only -- Glazed Terracotta is a different block (GlazedTerracottaBlock,
+        // deliberately out of scope) and not tagged/typed the same way, so this exact check can't
+        // accidentally match it.
+        if (stack.getItem() instanceof BlockItem terracottaItem && terracottaItem.getBlock() == Blocks.TERRACOTTA) {
+            return true;
+        }
         // Doors are convertible only if they're an exact match in VANILLA_DOOR_MATERIAL (not just
         // "any door" via ItemTags.DOORS) -- waxed copper doors are deliberately excluded there so
         // this recipe cleanly doesn't match for them, rather than matching and then producing an
@@ -158,6 +166,10 @@ public class ConvertAndDyeRecipe extends CustomRecipe {
             return new Conversion(TintedFullSpectrum.TINTED_SHORT_GRASS_ITEM.get(), 1);
         } else if (block == Blocks.TALL_GRASS) {
             return new Conversion(TintedFullSpectrum.TINTED_TALL_GRASS_ITEM.get(), 1);
+        } else if (block == Blocks.TERRACOTTA) {
+            // 8 terracotta + 1 dye -> 8 colored terracotta, vanilla's own real ratio (same as stained
+            // glass) -- confirmed in the handoff, not guessed.
+            return new Conversion(TintedFullSpectrum.TINTED_TERRACOTTA_ITEM.get(), 8);
         } else if (block instanceof CarpetBlock) {
             // Vanilla really does dye carpet 1-for-1 (dye_white_carpet.json) -- not a gap to fill.
             return new Conversion(TintedFullSpectrum.TINTED_CARPET_ITEM.get(), 1);
