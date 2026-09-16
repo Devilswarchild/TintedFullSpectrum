@@ -145,7 +145,14 @@ public class TintedFullSpectrumClient {
                 TintedFullSpectrum.CHROMA_GLASS.get(), TintedFullSpectrum.CHROMA_STAINED_GLASS.get(),
                 TintedFullSpectrum.CHROMA_STAINED_GLASS_PANE.get(),
                 TintedFullSpectrum.TINTED_TERRACOTTA.get(), TintedFullSpectrum.TINTED_CONCRETE.get(),
-                TintedFullSpectrum.TINTED_CONCRETE_POWDER.get()));
+                TintedFullSpectrum.TINTED_CONCRETE_POWDER.get(),
+                TintedFullSpectrum.TINTED_SANDSTONE.get(), TintedFullSpectrum.TINTED_CUT_SANDSTONE.get(),
+                TintedFullSpectrum.TINTED_CHISELED_SANDSTONE.get(), TintedFullSpectrum.TINTED_SMOOTH_SANDSTONE.get(),
+                TintedFullSpectrum.TINTED_RED_SANDSTONE.get(), TintedFullSpectrum.TINTED_CUT_RED_SANDSTONE.get(),
+                TintedFullSpectrum.TINTED_CHISELED_RED_SANDSTONE.get(), TintedFullSpectrum.TINTED_SMOOTH_RED_SANDSTONE.get(),
+                TintedFullSpectrum.TINTED_SAND.get(), TintedFullSpectrum.TINTED_RED_SAND.get(),
+                TintedFullSpectrum.TINTED_SANDSTONE_STAIRS.get(), TintedFullSpectrum.TINTED_SANDSTONE_SLAB.get(),
+                TintedFullSpectrum.TINTED_RED_SANDSTONE_STAIRS.get(), TintedFullSpectrum.TINTED_RED_SANDSTONE_SLAB.get()));
         for (var block : TintedFullSpectrum.TINTED_DOOR_BLOCKS.values()) {
             blocks.add(block.get());
         }
@@ -165,6 +172,13 @@ public class TintedFullSpectrumClient {
                 TintedFullSpectrum.CHROMA_STAINED_GLASS_PANE_ITEM.get(),
                 TintedFullSpectrum.TINTED_TERRACOTTA_ITEM.get(), TintedFullSpectrum.TINTED_CONCRETE_ITEM.get(),
                 TintedFullSpectrum.TINTED_CONCRETE_POWDER_ITEM.get(),
+                TintedFullSpectrum.TINTED_SANDSTONE_ITEM.get(), TintedFullSpectrum.TINTED_CUT_SANDSTONE_ITEM.get(),
+                TintedFullSpectrum.TINTED_CHISELED_SANDSTONE_ITEM.get(), TintedFullSpectrum.TINTED_SMOOTH_SANDSTONE_ITEM.get(),
+                TintedFullSpectrum.TINTED_RED_SANDSTONE_ITEM.get(), TintedFullSpectrum.TINTED_CUT_RED_SANDSTONE_ITEM.get(),
+                TintedFullSpectrum.TINTED_CHISELED_RED_SANDSTONE_ITEM.get(), TintedFullSpectrum.TINTED_SMOOTH_RED_SANDSTONE_ITEM.get(),
+                TintedFullSpectrum.TINTED_SAND_ITEM.get(), TintedFullSpectrum.TINTED_RED_SAND_ITEM.get(),
+                TintedFullSpectrum.TINTED_SANDSTONE_STAIRS_ITEM.get(), TintedFullSpectrum.TINTED_SANDSTONE_SLAB_ITEM.get(),
+                TintedFullSpectrum.TINTED_RED_SANDSTONE_STAIRS_ITEM.get(), TintedFullSpectrum.TINTED_RED_SANDSTONE_SLAB_ITEM.get(),
         };
     }
 

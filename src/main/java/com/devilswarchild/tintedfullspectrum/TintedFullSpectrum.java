@@ -284,6 +284,123 @@ public class TintedFullSpectrum {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TintedTerracottaBlockEntity>> TINTED_TERRACOTTA_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
             "tinted_terracotta", () -> BlockEntityType.Builder.of(TintedTerracottaBlockEntity::new, TINTED_TERRACOTTA.get()).build(null));
 
+    // Tinted Sandstone family -- vanilla-parity, TWO parallel families (Sandstone / Red Sandstone,
+    // matching vanilla's own real split) x 4 shapes each (base, Cut, Chiseled, Smooth). See
+    // tinted_full_spectrum_sandstone_handoff.md. Each shape uses Properties.ofFullCopy from its OWN
+    // exact matching vanilla block (not one shared source per family) -- Smooth in particular has a
+    // genuinely different hardness (2.0/6.0) than the other three shapes (0.8), confirmed via the
+    // real Blocks.java, so reusing one Properties source across a shape family would have been wrong
+    // (same lesson as the Tinted Iron Door bug last session). All 8 use the generic
+    // SimpleTintableBlock/SimpleTintableBlockEntity pair (see those classes) rather than 8 dedicated
+    // near-identical classes -- none of these shapes have any special behavior beyond tint storage.
+    public static final DeferredBlock<Block> TINTED_SANDSTONE = BLOCKS.register("tinted_sandstone",
+            () -> new SimpleTintableBlock(Properties.ofFullCopy(Blocks.SANDSTONE), TintedFullSpectrum.TINTED_SANDSTONE_BLOCK_ENTITY::get));
+    public static final DeferredItem<TintableBlockItem> TINTED_SANDSTONE_ITEM = ITEMS.register("tinted_sandstone",
+            () -> new TintableBlockItem(TINTED_SANDSTONE.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SimpleTintableBlockEntity>> TINTED_SANDSTONE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "tinted_sandstone", () -> BlockEntityType.Builder.of((pos, state) -> new SimpleTintableBlockEntity(TintedFullSpectrum.TINTED_SANDSTONE_BLOCK_ENTITY.get(), pos, state), TINTED_SANDSTONE.get()).build(null));
+
+    public static final DeferredBlock<Block> TINTED_CUT_SANDSTONE = BLOCKS.register("tinted_cut_sandstone",
+            () -> new SimpleTintableBlock(Properties.ofFullCopy(Blocks.CUT_SANDSTONE), TintedFullSpectrum.TINTED_CUT_SANDSTONE_BLOCK_ENTITY::get));
+    public static final DeferredItem<TintableBlockItem> TINTED_CUT_SANDSTONE_ITEM = ITEMS.register("tinted_cut_sandstone",
+            () -> new TintableBlockItem(TINTED_CUT_SANDSTONE.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SimpleTintableBlockEntity>> TINTED_CUT_SANDSTONE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "tinted_cut_sandstone", () -> BlockEntityType.Builder.of((pos, state) -> new SimpleTintableBlockEntity(TintedFullSpectrum.TINTED_CUT_SANDSTONE_BLOCK_ENTITY.get(), pos, state), TINTED_CUT_SANDSTONE.get()).build(null));
+
+    public static final DeferredBlock<Block> TINTED_CHISELED_SANDSTONE = BLOCKS.register("tinted_chiseled_sandstone",
+            () -> new SimpleTintableBlock(Properties.ofFullCopy(Blocks.CHISELED_SANDSTONE), TintedFullSpectrum.TINTED_CHISELED_SANDSTONE_BLOCK_ENTITY::get));
+    public static final DeferredItem<TintableBlockItem> TINTED_CHISELED_SANDSTONE_ITEM = ITEMS.register("tinted_chiseled_sandstone",
+            () -> new TintableBlockItem(TINTED_CHISELED_SANDSTONE.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SimpleTintableBlockEntity>> TINTED_CHISELED_SANDSTONE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "tinted_chiseled_sandstone", () -> BlockEntityType.Builder.of((pos, state) -> new SimpleTintableBlockEntity(TintedFullSpectrum.TINTED_CHISELED_SANDSTONE_BLOCK_ENTITY.get(), pos, state), TINTED_CHISELED_SANDSTONE.get()).build(null));
+
+    public static final DeferredBlock<Block> TINTED_SMOOTH_SANDSTONE = BLOCKS.register("tinted_smooth_sandstone",
+            () -> new SimpleTintableBlock(Properties.ofFullCopy(Blocks.SMOOTH_SANDSTONE), TintedFullSpectrum.TINTED_SMOOTH_SANDSTONE_BLOCK_ENTITY::get));
+    public static final DeferredItem<TintableBlockItem> TINTED_SMOOTH_SANDSTONE_ITEM = ITEMS.register("tinted_smooth_sandstone",
+            () -> new TintableBlockItem(TINTED_SMOOTH_SANDSTONE.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SimpleTintableBlockEntity>> TINTED_SMOOTH_SANDSTONE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "tinted_smooth_sandstone", () -> BlockEntityType.Builder.of((pos, state) -> new SimpleTintableBlockEntity(TintedFullSpectrum.TINTED_SMOOTH_SANDSTONE_BLOCK_ENTITY.get(), pos, state), TINTED_SMOOTH_SANDSTONE.get()).build(null));
+
+    public static final DeferredBlock<Block> TINTED_RED_SANDSTONE = BLOCKS.register("tinted_red_sandstone",
+            () -> new SimpleTintableBlock(Properties.ofFullCopy(Blocks.RED_SANDSTONE), TintedFullSpectrum.TINTED_RED_SANDSTONE_BLOCK_ENTITY::get));
+    public static final DeferredItem<TintableBlockItem> TINTED_RED_SANDSTONE_ITEM = ITEMS.register("tinted_red_sandstone",
+            () -> new TintableBlockItem(TINTED_RED_SANDSTONE.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SimpleTintableBlockEntity>> TINTED_RED_SANDSTONE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "tinted_red_sandstone", () -> BlockEntityType.Builder.of((pos, state) -> new SimpleTintableBlockEntity(TintedFullSpectrum.TINTED_RED_SANDSTONE_BLOCK_ENTITY.get(), pos, state), TINTED_RED_SANDSTONE.get()).build(null));
+
+    public static final DeferredBlock<Block> TINTED_CUT_RED_SANDSTONE = BLOCKS.register("tinted_cut_red_sandstone",
+            () -> new SimpleTintableBlock(Properties.ofFullCopy(Blocks.CUT_RED_SANDSTONE), TintedFullSpectrum.TINTED_CUT_RED_SANDSTONE_BLOCK_ENTITY::get));
+    public static final DeferredItem<TintableBlockItem> TINTED_CUT_RED_SANDSTONE_ITEM = ITEMS.register("tinted_cut_red_sandstone",
+            () -> new TintableBlockItem(TINTED_CUT_RED_SANDSTONE.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SimpleTintableBlockEntity>> TINTED_CUT_RED_SANDSTONE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "tinted_cut_red_sandstone", () -> BlockEntityType.Builder.of((pos, state) -> new SimpleTintableBlockEntity(TintedFullSpectrum.TINTED_CUT_RED_SANDSTONE_BLOCK_ENTITY.get(), pos, state), TINTED_CUT_RED_SANDSTONE.get()).build(null));
+
+    public static final DeferredBlock<Block> TINTED_CHISELED_RED_SANDSTONE = BLOCKS.register("tinted_chiseled_red_sandstone",
+            () -> new SimpleTintableBlock(Properties.ofFullCopy(Blocks.CHISELED_RED_SANDSTONE), TintedFullSpectrum.TINTED_CHISELED_RED_SANDSTONE_BLOCK_ENTITY::get));
+    public static final DeferredItem<TintableBlockItem> TINTED_CHISELED_RED_SANDSTONE_ITEM = ITEMS.register("tinted_chiseled_red_sandstone",
+            () -> new TintableBlockItem(TINTED_CHISELED_RED_SANDSTONE.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SimpleTintableBlockEntity>> TINTED_CHISELED_RED_SANDSTONE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "tinted_chiseled_red_sandstone", () -> BlockEntityType.Builder.of((pos, state) -> new SimpleTintableBlockEntity(TintedFullSpectrum.TINTED_CHISELED_RED_SANDSTONE_BLOCK_ENTITY.get(), pos, state), TINTED_CHISELED_RED_SANDSTONE.get()).build(null));
+
+    public static final DeferredBlock<Block> TINTED_SMOOTH_RED_SANDSTONE = BLOCKS.register("tinted_smooth_red_sandstone",
+            () -> new SimpleTintableBlock(Properties.ofFullCopy(Blocks.SMOOTH_RED_SANDSTONE), TintedFullSpectrum.TINTED_SMOOTH_RED_SANDSTONE_BLOCK_ENTITY::get));
+    public static final DeferredItem<TintableBlockItem> TINTED_SMOOTH_RED_SANDSTONE_ITEM = ITEMS.register("tinted_smooth_red_sandstone",
+            () -> new TintableBlockItem(TINTED_SMOOTH_RED_SANDSTONE.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SimpleTintableBlockEntity>> TINTED_SMOOTH_RED_SANDSTONE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "tinted_smooth_red_sandstone", () -> BlockEntityType.Builder.of((pos, state) -> new SimpleTintableBlockEntity(TintedFullSpectrum.TINTED_SMOOTH_RED_SANDSTONE_BLOCK_ENTITY.get(), pos, state), TINTED_SMOOTH_RED_SANDSTONE.get()).build(null));
+
+    // Tinted Sand / Tinted Red Sand -- gravity-affected, vanilla-parity, one class (TintedSandBlock)
+    // shared by both, mirroring vanilla's own real Sand/Red Sand split (and matching the user's
+    // confirmation that the ONLY genuine art difference anywhere in this whole sand+sandstone family
+    // tree is Chiseled Sandstone -- both sand variants share one texture). No mineable/pickaxe tag
+    // needed -- confirmed via the real Blocks.java, neither vanilla Sand nor Red Sand has
+    // requiresCorrectToolForDrops() at all, unlike the Sandstone shapes above.
+    public static final DeferredBlock<Block> TINTED_SAND = BLOCKS.register("tinted_sand",
+            () -> new TintedSandBlock(Properties.ofFullCopy(Blocks.SAND)));
+    public static final DeferredItem<TintableBlockItem> TINTED_SAND_ITEM = ITEMS.register("tinted_sand",
+            () -> new TintableBlockItem(TINTED_SAND.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SimpleTintableBlockEntity>> TINTED_SAND_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "tinted_sand", () -> BlockEntityType.Builder.of((pos, state) -> new SimpleTintableBlockEntity(TintedFullSpectrum.TINTED_SAND_BLOCK_ENTITY.get(), pos, state), TINTED_SAND.get()).build(null));
+
+    public static final DeferredBlock<Block> TINTED_RED_SAND = BLOCKS.register("tinted_red_sand",
+            () -> new TintedSandBlock(Properties.ofFullCopy(Blocks.RED_SAND)));
+    public static final DeferredItem<TintableBlockItem> TINTED_RED_SAND_ITEM = ITEMS.register("tinted_red_sand",
+            () -> new TintableBlockItem(TINTED_RED_SAND.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SimpleTintableBlockEntity>> TINTED_RED_SAND_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "tinted_red_sand", () -> BlockEntityType.Builder.of((pos, state) -> new SimpleTintableBlockEntity(TintedFullSpectrum.TINTED_RED_SAND_BLOCK_ENTITY.get(), pos, state), TINTED_RED_SAND.get()).build(null));
+
+    // Tinted [Red] Sandstone Stairs/Slab -- closes the dependency gap the original Sandstone handoff
+    // explicitly flagged (Chiseled's real slab-stacking crafting recipe needed these to exist first).
+    public static final DeferredBlock<Block> TINTED_SANDSTONE_STAIRS = BLOCKS.register("tinted_sandstone_stairs",
+            () -> new SimpleTintableStairBlock(TINTED_SANDSTONE.get().defaultBlockState(), Properties.ofFullCopy(Blocks.SANDSTONE_STAIRS),
+                    TintedFullSpectrum.TINTED_SANDSTONE_STAIRS_BLOCK_ENTITY::get));
+    public static final DeferredItem<TintableBlockItem> TINTED_SANDSTONE_STAIRS_ITEM = ITEMS.register("tinted_sandstone_stairs",
+            () -> new TintableBlockItem(TINTED_SANDSTONE_STAIRS.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SimpleTintableBlockEntity>> TINTED_SANDSTONE_STAIRS_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "tinted_sandstone_stairs", () -> BlockEntityType.Builder.of((pos, state) -> new SimpleTintableBlockEntity(TintedFullSpectrum.TINTED_SANDSTONE_STAIRS_BLOCK_ENTITY.get(), pos, state), TINTED_SANDSTONE_STAIRS.get()).build(null));
+
+    public static final DeferredBlock<Block> TINTED_SANDSTONE_SLAB = BLOCKS.register("tinted_sandstone_slab",
+            () -> new SimpleTintableSlabBlock(Properties.ofFullCopy(Blocks.SANDSTONE_SLAB), TintedFullSpectrum.TINTED_SANDSTONE_SLAB_BLOCK_ENTITY::get));
+    public static final DeferredItem<TintableBlockItem> TINTED_SANDSTONE_SLAB_ITEM = ITEMS.register("tinted_sandstone_slab",
+            () -> new TintableBlockItem(TINTED_SANDSTONE_SLAB.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SimpleTintableBlockEntity>> TINTED_SANDSTONE_SLAB_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "tinted_sandstone_slab", () -> BlockEntityType.Builder.of((pos, state) -> new SimpleTintableBlockEntity(TintedFullSpectrum.TINTED_SANDSTONE_SLAB_BLOCK_ENTITY.get(), pos, state), TINTED_SANDSTONE_SLAB.get()).build(null));
+
+    public static final DeferredBlock<Block> TINTED_RED_SANDSTONE_STAIRS = BLOCKS.register("tinted_red_sandstone_stairs",
+            () -> new SimpleTintableStairBlock(TINTED_RED_SANDSTONE.get().defaultBlockState(), Properties.ofFullCopy(Blocks.RED_SANDSTONE_STAIRS),
+                    TintedFullSpectrum.TINTED_RED_SANDSTONE_STAIRS_BLOCK_ENTITY::get));
+    public static final DeferredItem<TintableBlockItem> TINTED_RED_SANDSTONE_STAIRS_ITEM = ITEMS.register("tinted_red_sandstone_stairs",
+            () -> new TintableBlockItem(TINTED_RED_SANDSTONE_STAIRS.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SimpleTintableBlockEntity>> TINTED_RED_SANDSTONE_STAIRS_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "tinted_red_sandstone_stairs", () -> BlockEntityType.Builder.of((pos, state) -> new SimpleTintableBlockEntity(TintedFullSpectrum.TINTED_RED_SANDSTONE_STAIRS_BLOCK_ENTITY.get(), pos, state), TINTED_RED_SANDSTONE_STAIRS.get()).build(null));
+
+    public static final DeferredBlock<Block> TINTED_RED_SANDSTONE_SLAB = BLOCKS.register("tinted_red_sandstone_slab",
+            () -> new SimpleTintableSlabBlock(Properties.ofFullCopy(Blocks.RED_SANDSTONE_SLAB), TintedFullSpectrum.TINTED_RED_SANDSTONE_SLAB_BLOCK_ENTITY::get));
+    public static final DeferredItem<TintableBlockItem> TINTED_RED_SANDSTONE_SLAB_ITEM = ITEMS.register("tinted_red_sandstone_slab",
+            () -> new TintableBlockItem(TINTED_RED_SANDSTONE_SLAB.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SimpleTintableBlockEntity>> TINTED_RED_SANDSTONE_SLAB_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "tinted_red_sandstone_slab", () -> BlockEntityType.Builder.of((pos, state) -> new SimpleTintableBlockEntity(TintedFullSpectrum.TINTED_RED_SANDSTONE_SLAB_BLOCK_ENTITY.get(), pos, state), TINTED_RED_SANDSTONE_SLAB.get()).build(null));
+
     // Tinted Concrete -- FULL vanilla parity per explicit user request ("might as well make them
     // mirror their vanilla counterparts"): a real gravity-affected Tinted Concrete Powder that
     // hardens into this solid block on water contact, same two-block relationship as vanilla's own
@@ -415,6 +532,44 @@ public class TintedFullSpectrum {
     // stained-glass-to-pane ratio -- see ChromaStainedGlassToPaneRecipe.
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<ChromaStainedGlassToPaneRecipe>> CHROMA_STAINED_GLASS_TO_PANE_SERIALIZER = RECIPE_SERIALIZERS.register(
             "chroma_stained_glass_to_pane", () -> new SimpleCraftingRecipeSerializer<>(ChromaStainedGlassToPaneRecipe::new));
+
+    // Tint-carrying furnace smelting (registers under vanilla's own RecipeType.SMELTING via
+    // AbstractCookingRecipe) -- see TintCarryingSmeltingRecipe. Used for Tinted [Red] Sandstone ->
+    // Tinted Smooth [Red] Sandstone, mirroring vanilla's real smelting-only path to Smooth.
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<TintCarryingSmeltingRecipe>> TINT_CARRYING_SMELTING_SERIALIZER = RECIPE_SERIALIZERS.register(
+            "tint_carrying_smelting", () -> new net.minecraft.world.item.crafting.SimpleCookingSerializer<>(TintCarryingSmeltingRecipe::new, 200));
+
+    // Tint-carrying stonecutting (registers under vanilla's own RecipeType.STONECUTTING via
+    // StonecutterRecipe) -- see TintCarryingStonecuttingRecipe. Used for all six Tinted [Red]
+    // Sandstone -> Tinted [Red] Cut/Chiseled conversions.
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<TintCarryingStonecuttingRecipe>> TINT_CARRYING_STONECUTTING_SERIALIZER = RECIPE_SERIALIZERS.register(
+            "tint_carrying_stonecutting", TintCarryingStonecuttingRecipe.Serializer::new);
+
+    // 4 Tinted [Red] Sandstone (same color) -> 4 Tinted [Red] Cut Sandstone, mirroring vanilla's own
+    // real 2x2-sandstone-to-4-cut-sandstone shaped recipe -- see TintedCutSandstoneRecipe.
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<TintedCutSandstoneRecipe>> TINTED_CUT_SANDSTONE_SERIALIZER = RECIPE_SERIALIZERS.register(
+            "tinted_cut_sandstone", () -> new SimpleCraftingRecipeSerializer<>(TintedCutSandstoneRecipe::new));
+
+    // 4 Tinted [Red] Sand (same color) -> 1 Tinted [Red] Sandstone, mirroring vanilla's own real
+    // 2x2-sand-to-1-sandstone shaped recipe -- see TintedSandstoneFromSandRecipe.
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<TintedSandstoneFromSandRecipe>> TINTED_SANDSTONE_FROM_SAND_SERIALIZER = RECIPE_SERIALIZERS.register(
+            "tinted_sandstone_from_sand", () -> new SimpleCraftingRecipeSerializer<>(TintedSandstoneFromSandRecipe::new));
+
+    // 6 of [Tinted [Red] Sandstone/Cut/Chiseled] (same color) -> 4 Tinted [Red] Sandstone Stairs,
+    // mirroring vanilla's own real sandstone_stairs.json -- see TintedSandstoneStairsRecipe.
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<TintedSandstoneStairsRecipe>> TINTED_SANDSTONE_STAIRS_SERIALIZER = RECIPE_SERIALIZERS.register(
+            "tinted_sandstone_stairs", () -> new SimpleCraftingRecipeSerializer<>(TintedSandstoneStairsRecipe::new));
+
+    // 3 of [Tinted [Red] Sandstone/Chiseled] (same color) -> 6 Tinted [Red] Sandstone Slab, mirroring
+    // vanilla's own real sandstone_slab.json -- see TintedSandstoneSlabRecipe.
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<TintedSandstoneSlabRecipe>> TINTED_SANDSTONE_SLAB_SERIALIZER = RECIPE_SERIALIZERS.register(
+            "tinted_sandstone_slab", () -> new SimpleCraftingRecipeSerializer<>(TintedSandstoneSlabRecipe::new));
+
+    // 2 Tinted [Red] Sandstone Slab (same color) -> 1 Tinted [Red] Chiseled Sandstone, mirroring
+    // vanilla's own real chiseled_sandstone.json -- see TintedChiseledSandstoneFromSlabRecipe. Closes
+    // the dependency gap the Sandstone handoff flagged (needed Slabs to exist first).
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<TintedChiseledSandstoneFromSlabRecipe>> TINTED_CHISELED_SANDSTONE_FROM_SLAB_SERIALIZER = RECIPE_SERIALIZERS.register(
+            "tinted_chiseled_sandstone_from_slab", () -> new SimpleCraftingRecipeSerializer<>(TintedChiseledSandstoneFromSlabRecipe::new));
 
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN_TAB = CREATIVE_MODE_TABS.register("main", () -> CreativeModeTab.builder()

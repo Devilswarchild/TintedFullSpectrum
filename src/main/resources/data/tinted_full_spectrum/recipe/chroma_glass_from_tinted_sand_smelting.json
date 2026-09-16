@@ -1,0 +1,12 @@
+{
+  "type": "tinted_full_spectrum:tint_carrying_smelting",
+  "category": "blocks",
+  "cookingtime": 200,
+  "experience": 0.1,
+  "ingredient": {
+    "item": "tinted_full_spectrum:tinted_sand"
+  },
+  "result": {
+    "id": "tinted_full_spectrum:chroma_glass"
+  }
+}

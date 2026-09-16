@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "tinted_full_spectrum:block/tinted_red_sandstone_slab"
+    },
+    "type=double": {
+      "model": "tinted_full_spectrum:block/tinted_red_sandstone"
+    },
+    "type=top": {
+      "model": "tinted_full_spectrum:block/tinted_red_sandstone_slab_top"
+    }
+  }
+}

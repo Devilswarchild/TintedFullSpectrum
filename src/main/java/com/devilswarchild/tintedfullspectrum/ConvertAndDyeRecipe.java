@@ -177,6 +177,17 @@ public class ConvertAndDyeRecipe extends CustomRecipe {
         if (stack.getItem() instanceof BlockItem terracottaItem && terracottaItem.getBlock() == Blocks.TERRACOTTA) {
             return true;
         }
+        // Sandstone / Red Sandstone bases -- neither has any vanilla dye mechanic at all (unlike
+        // Terracotta), so this is the plain "no vanilla ratio to mirror" bucket, same as Torch/Grass.
+        if (stack.getItem() instanceof BlockItem sandstoneItem
+                && (sandstoneItem.getBlock() == Blocks.SANDSTONE || sandstoneItem.getBlock() == Blocks.RED_SANDSTONE)) {
+            return true;
+        }
+        // Sand / Red Sand bases -- same "no vanilla dye mechanic, no ratio to mirror" bucket.
+        if (stack.getItem() instanceof BlockItem sandItem
+                && (sandItem.getBlock() == Blocks.SAND || sandItem.getBlock() == Blocks.RED_SAND)) {
+            return true;
+        }
         // Doors are convertible only if they're an exact match in VANILLA_DOOR_MATERIAL (not just
         // "any door" via ItemTags.DOORS) -- waxed copper doors are deliberately excluded there so
         // this recipe cleanly doesn't match for them, rather than matching and then producing an
@@ -203,6 +214,18 @@ public class ConvertAndDyeRecipe extends CustomRecipe {
             // 8 terracotta + 1 dye -> 8 colored terracotta, vanilla's own real ratio (same as stained
             // glass) -- confirmed in the handoff, not guessed.
             return new Conversion(TintedFullSpectrum.TINTED_TERRACOTTA_ITEM.get(), 8);
+        } else if (block == Blocks.SANDSTONE) {
+            // No vanilla ratio to mirror (sandstone isn't dyeable in vanilla at all) -- 4, same
+            // convention as the Hourglass Door's base recipe.
+            return new Conversion(TintedFullSpectrum.TINTED_SANDSTONE_ITEM.get(), 4);
+        } else if (block == Blocks.RED_SANDSTONE) {
+            return new Conversion(TintedFullSpectrum.TINTED_RED_SANDSTONE_ITEM.get(), 4);
+        } else if (block == Blocks.SAND) {
+            // No vanilla ratio to mirror (sand isn't dyeable in vanilla at all) -- 8, matching the
+            // same batch size Terracotta/Glass/Glass Pane use, per explicit user request.
+            return new Conversion(TintedFullSpectrum.TINTED_SAND_ITEM.get(), 8);
+        } else if (block == Blocks.RED_SAND) {
+            return new Conversion(TintedFullSpectrum.TINTED_RED_SAND_ITEM.get(), 8);
         } else if (block instanceof CarpetBlock) {
             // Vanilla really does dye carpet 1-for-1 (dye_white_carpet.json) -- not a gap to fill.
             return new Conversion(TintedFullSpectrum.TINTED_CARPET_ITEM.get(), 1);

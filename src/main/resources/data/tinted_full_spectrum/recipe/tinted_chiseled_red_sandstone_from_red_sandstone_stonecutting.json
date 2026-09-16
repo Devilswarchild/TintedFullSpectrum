@@ -1,0 +1,10 @@
+{
+  "type": "tinted_full_spectrum:tint_carrying_stonecutting",
+  "ingredient": {
+    "item": "tinted_full_spectrum:tinted_red_sandstone"
+  },
+  "result": {
+    "count": 1,
+    "id": "tinted_full_spectrum:tinted_chiseled_red_sandstone"
+  }
+}

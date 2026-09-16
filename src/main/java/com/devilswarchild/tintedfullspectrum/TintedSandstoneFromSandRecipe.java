@@ -1,0 +1,87 @@
+package com.devilswarchild.tintedfullspectrum;
+
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
+
+// Mirrors vanilla's own real "2x2 sand -> 1 sandstone" / "2x2 red_sand -> 1 red_sandstone" shaped
+// crafting recipes (confirmed via the real sandstone.json/red_sandstone.json), for Tinted Sand ->
+// Tinted Sandstone and Tinted Red Sand -> Tinted Red Sandstone, carrying the sand's own color onto
+// the result -- no dye involved, same "no dye, color comes from the sole input" shape as
+// TintedCutSandstoneRecipe, covering both families via a small dispatch table in one class.
+public class TintedSandstoneFromSandRecipe extends CustomRecipe {
+    public TintedSandstoneFromSandRecipe(CraftingBookCategory category) {
+        super(category);
+    }
+
+    private static Item sandstoneResultFor(Item source) {
+        if (source == TintedFullSpectrum.TINTED_SAND_ITEM.get()) {
+            return TintedFullSpectrum.TINTED_SANDSTONE_ITEM.get();
+        } else if (source == TintedFullSpectrum.TINTED_RED_SAND_ITEM.get()) {
+            return TintedFullSpectrum.TINTED_RED_SANDSTONE_ITEM.get();
+        }
+        return null;
+    }
+
+    @Override
+    public boolean matches(CraftingInput input, Level level) {
+        return findResult(input) != null;
+    }
+
+    @Override
+    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
+        Object[] found = findResult(input);
+        if (found == null) {
+            return ItemStack.EMPTY;
+        }
+        Item result = (Item) found[0];
+        TintColorComponent color = (TintColorComponent) found[1];
+        ItemStack output = new ItemStack(result, 1);
+        output.set(TintedFullSpectrum.TINT_COLOR.get(), color);
+        return output;
+    }
+
+    // Returns {resultItem, color} if the grid holds exactly 4 stacks of the SAME Tinted Sand or
+    // Tinted Red Sand item, all carrying the same color.
+    private static Object[] findResult(CraftingInput input) {
+        Item source = null;
+        TintColorComponent color = null;
+        int count = 0;
+        for (int i = 0; i < input.size(); i++) {
+            ItemStack stack = input.getItem(i);
+            if (stack.isEmpty()) {
+                continue;
+            }
+            if (source != null && stack.getItem() != source) {
+                return null;
+            }
+            source = stack.getItem();
+            TintColorComponent stackColor = stack.get(TintedFullSpectrum.TINT_COLOR.get());
+            if (stackColor == null || (color != null && !color.equals(stackColor))) {
+                return null;
+            }
+            color = stackColor;
+            count++;
+        }
+        if (count != 4 || source == null) {
+            return null;
+        }
+        Item result = sandstoneResultFor(source);
+        return result != null ? new Object[] {result, color} : null;
+    }
+
+    @Override
+    public boolean canCraftInDimensions(int width, int height) {
+        return width * height >= 4;
+    }
+
+    @Override
+    public RecipeSerializer<?> getSerializer() {
+        return TintedFullSpectrum.TINTED_SANDSTONE_FROM_SAND_SERIALIZER.get();
+    }
+}

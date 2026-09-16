@@ -2,6 +2,18 @@
   "values": [
     "tinted_full_spectrum:tinted_terracotta",
     "tinted_full_spectrum:tinted_concrete",
-    "tinted_full_spectrum:tinted_iron_door"
+    "tinted_full_spectrum:tinted_iron_door",
+    "tinted_full_spectrum:tinted_sandstone",
+    "tinted_full_spectrum:tinted_cut_sandstone",
+    "tinted_full_spectrum:tinted_chiseled_sandstone",
+    "tinted_full_spectrum:tinted_smooth_sandstone",
+    "tinted_full_spectrum:tinted_red_sandstone",
+    "tinted_full_spectrum:tinted_cut_red_sandstone",
+    "tinted_full_spectrum:tinted_chiseled_red_sandstone",
+    "tinted_full_spectrum:tinted_smooth_red_sandstone",
+    "tinted_full_spectrum:tinted_sandstone_stairs",
+    "tinted_full_spectrum:tinted_sandstone_slab",
+    "tinted_full_spectrum:tinted_red_sandstone_stairs",
+    "tinted_full_spectrum:tinted_red_sandstone_slab"
   ]
 }
