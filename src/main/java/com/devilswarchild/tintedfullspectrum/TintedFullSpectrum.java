@@ -59,6 +59,17 @@ public class TintedFullSpectrum {
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, MODID);
     public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENTS = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, MODID);
     public static final DeferredRegister<net.minecraft.core.particles.ParticleType<?>> PARTICLE_TYPES = DeferredRegister.create(Registries.PARTICLE_TYPE, MODID);
+    public static final DeferredRegister<net.minecraft.world.entity.EntityType<?>> ENTITY_TYPES = DeferredRegister.create(Registries.ENTITY_TYPE, MODID);
+
+    // A tinted twin of vanilla's own EntityType.FALLING_BLOCK, same sizing/tracking parameters --
+    // needed because vanilla's FallingBlockEntity has no way to carry an arbitrary color to the
+    // client while airborne (see TintedFallingBlockEntity). Only ever spawned by
+    // TintedConcretePowderBlock#tick(); rendered by TintedFallingBlockRenderer.
+    public static final DeferredHolder<net.minecraft.world.entity.EntityType<?>, net.minecraft.world.entity.EntityType<TintedFallingBlockEntity>> TINTED_FALLING_BLOCK = ENTITY_TYPES.register(
+            "tinted_falling_block", () -> net.minecraft.world.entity.EntityType.Builder
+                    .<TintedFallingBlockEntity>of(TintedFallingBlockEntity::new, net.minecraft.world.entity.MobCategory.MISC)
+                    .sized(0.98F, 0.98F).clientTrackingRange(10).updateInterval(20)
+                    .build("tinted_falling_block"));
 
     // The vanilla-parity Torch's flame particle, tinted to match the torch's stored color -- see
     // TintedFlameParticleOptions/TintedFlameParticle.
@@ -178,8 +189,12 @@ public class TintedFullSpectrum {
     private static java.util.Map<String, DeferredBlock<Block>> registerTintedDoorBlocks() {
         java.util.Map<String, DeferredBlock<Block>> map = new java.util.LinkedHashMap<>();
         for (String material : TINTED_DOOR_MATERIALS) {
+            // Iron gets IRON_DOOR's own properties (harder, blast-resistant, metal sound, non-flammable,
+            // requires a pickaxe) -- every wood material shares OAK_DOOR's properties, matching vanilla
+            // where every wood door type uses the same base hardness/sound regardless of species.
+            Block vanillaSource = material.equals("iron") ? Blocks.IRON_DOOR : Blocks.OAK_DOOR;
             map.put(material, BLOCKS.register("tinted_" + material + "_door",
-                    () -> new TintedDoorBlock(Properties.ofFullCopy(Blocks.OAK_DOOR))));
+                    () -> new TintedDoorBlock(Properties.ofFullCopy(vanillaSource))));
         }
         return map;
     }
@@ -269,15 +284,63 @@ public class TintedFullSpectrum {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TintedTerracottaBlockEntity>> TINTED_TERRACOTTA_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
             "tinted_terracotta", () -> BlockEntityType.Builder.of(TintedTerracottaBlockEntity::new, TINTED_TERRACOTTA.get()).build(null));
 
-    // Chroma Glass Pane: vanilla-parity glass pane, panes only (no solid glass block -- deliberate
-    // scope call, see tinted_full_spectrum_glass_handoff.md). Named to avoid colliding in spirit with
-    // vanilla's own real minecraft:tinted_glass (the copper-frosted block).
+    // Tinted Concrete -- FULL vanilla parity per explicit user request ("might as well make them
+    // mirror their vanilla counterparts"): a real gravity-affected Tinted Concrete Powder that
+    // hardens into this solid block on water contact, same two-block relationship as vanilla's own
+    // Concrete Powder / Concrete. See TintedConcretePowderBlock for how the tint color survives every
+    // transition (falling, landing, hardening in place) -- none of which vanilla's own colorless
+    // powder ever needed to solve. Both blocks share ONE BlockEntityType specifically so the block
+    // entity (and its color) can be preserved in place across the powder->solid conversion instead of
+    // being destroyed and recreated blank.
+    public static final DeferredBlock<Block> TINTED_CONCRETE = BLOCKS.register("tinted_concrete",
+            () -> new TintedConcreteBlock(Properties.ofFullCopy(Blocks.WHITE_CONCRETE)));
+    public static final DeferredItem<TintableBlockItem> TINTED_CONCRETE_ITEM = ITEMS.register("tinted_concrete",
+            () -> new TintableBlockItem(TINTED_CONCRETE.get(), new Item.Properties()));
+    public static final DeferredBlock<Block> TINTED_CONCRETE_POWDER = BLOCKS.register("tinted_concrete_powder",
+            () -> new TintedConcretePowderBlock(Properties.ofFullCopy(Blocks.WHITE_CONCRETE_POWDER)));
+    public static final DeferredItem<TintableBlockItem> TINTED_CONCRETE_POWDER_ITEM = ITEMS.register("tinted_concrete_powder",
+            () -> new TintableBlockItem(TINTED_CONCRETE_POWDER.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TintedConcreteBlockEntity>> TINTED_CONCRETE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "tinted_concrete", () -> BlockEntityType.Builder.of(TintedConcreteBlockEntity::new,
+                    TINTED_CONCRETE.get(), TINTED_CONCRETE_POWDER.get()).build(null));
+
+
+    // Chroma Glass Pane: vanilla-parity glass pane. Named to avoid colliding in spirit with vanilla's
+    // own real minecraft:tinted_glass (the copper-frosted block).
     public static final DeferredBlock<Block> CHROMA_GLASS_PANE = BLOCKS.register("chroma_glass_pane",
             () -> new ChromaGlassPaneBlock(Properties.ofFullCopy(Blocks.GLASS_PANE)));
     public static final DeferredItem<TintableBlockItem> CHROMA_GLASS_PANE_ITEM = ITEMS.register("chroma_glass_pane",
             () -> new TintableBlockItem(CHROMA_GLASS_PANE.get(), new Item.Properties()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ChromaGlassPaneBlockEntity>> CHROMA_GLASS_PANE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
             "chroma_glass_pane", () -> BlockEntityType.Builder.of(ChromaGlassPaneBlockEntity::new, CHROMA_GLASS_PANE.get()).build(null));
+
+    // Chroma Glass: the solid glass block counterpart to Chroma Glass Pane, same naming-collision
+    // reasoning (avoids minecraft:tinted_glass in spirit). Extends TransparentBlock directly (plain
+    // Blocks.GLASS), same scoped-simplification as the pane skipping StainedGlassBlock.
+    public static final DeferredBlock<Block> CHROMA_GLASS = BLOCKS.register("chroma_glass",
+            () -> new ChromaGlassBlock(Properties.ofFullCopy(Blocks.GLASS)));
+    public static final DeferredItem<TintableBlockItem> CHROMA_GLASS_ITEM = ITEMS.register("chroma_glass",
+            () -> new TintableBlockItem(CHROMA_GLASS.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ChromaGlassBlockEntity>> CHROMA_GLASS_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "chroma_glass", () -> BlockEntityType.Builder.of(ChromaGlassBlockEntity::new, CHROMA_GLASS.get()).build(null));
+
+    // Chroma Stained Glass: the dyeable counterpart to Chroma Glass -- vanilla only ever dyes INTO
+    // stained glass (plain glass is never dyed at all), so this is the block the dye recipes actually
+    // target, matching vanilla's real Glass/Stained Glass split. Same TransparentBlock pattern.
+    public static final DeferredBlock<Block> CHROMA_STAINED_GLASS = BLOCKS.register("chroma_stained_glass",
+            () -> new ChromaStainedGlassBlock(Properties.ofFullCopy(Blocks.WHITE_STAINED_GLASS)));
+    public static final DeferredItem<TintableBlockItem> CHROMA_STAINED_GLASS_ITEM = ITEMS.register("chroma_stained_glass",
+            () -> new TintableBlockItem(CHROMA_STAINED_GLASS.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ChromaStainedGlassBlockEntity>> CHROMA_STAINED_GLASS_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "chroma_stained_glass", () -> BlockEntityType.Builder.of(ChromaStainedGlassBlockEntity::new, CHROMA_STAINED_GLASS.get()).build(null));
+
+    // Chroma Stained Glass Pane: the dyeable counterpart to Chroma Glass Pane, same reasoning as above.
+    public static final DeferredBlock<Block> CHROMA_STAINED_GLASS_PANE = BLOCKS.register("chroma_stained_glass_pane",
+            () -> new ChromaGlassPaneBlock(Properties.ofFullCopy(Blocks.WHITE_STAINED_GLASS_PANE)));
+    public static final DeferredItem<TintableBlockItem> CHROMA_STAINED_GLASS_PANE_ITEM = ITEMS.register("chroma_stained_glass_pane",
+            () -> new TintableBlockItem(CHROMA_STAINED_GLASS_PANE.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ChromaGlassPaneBlockEntity>> CHROMA_STAINED_GLASS_PANE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "chroma_stained_glass_pane", () -> BlockEntityType.Builder.of(ChromaGlassPaneBlockEntity::new, CHROMA_STAINED_GLASS_PANE.get()).build(null));
 
     // The Chroma Alembic: faces the player at placement like a furnace; right-click opens the
     // dye-crafting GUI. See chroma_alembic_full_build.md.
@@ -326,9 +389,32 @@ public class TintedFullSpectrum {
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<StringToWoolRecipe>> STRING_TO_WOOL_SERIALIZER = RECIPE_SERIALIZERS.register(
             "string_to_wool", () -> new SimpleCraftingRecipeSerializer<>(StringToWoolRecipe::new));
 
-    // 8 glass pane + Colored Dye -> 8 Chroma Glass Pane -- see ChromaGlassPaneRecipe.
+    // 8 glass pane + dye -> 8 Chroma Stained Glass Pane -- see ChromaGlassPaneRecipe.
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<ChromaGlassPaneRecipe>> CHROMA_GLASS_PANE_SERIALIZER = RECIPE_SERIALIZERS.register(
             "chroma_glass_pane", () -> new SimpleCraftingRecipeSerializer<>(ChromaGlassPaneRecipe::new));
+
+    // 4 sand + 4 gravel + Colored Dye -> 8 Tinted Concrete Powder, mirroring vanilla's own real
+    // concrete powder recipe exactly -- see TintedConcretePowderRecipe.
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<TintedConcretePowderRecipe>> TINTED_CONCRETE_POWDER_SERIALIZER = RECIPE_SERIALIZERS.register(
+            "tinted_concrete_powder", () -> new SimpleCraftingRecipeSerializer<>(TintedConcretePowderRecipe::new));
+
+    // 1 torch + 1 iron ingot + dye -> 1 Tinted Torch, already colored -- see TintedTorchRecipe.
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<TintedTorchRecipe>> TINTED_TORCH_SERIALIZER = RECIPE_SERIALIZERS.register(
+            "tinted_torch", () -> new SimpleCraftingRecipeSerializer<>(TintedTorchRecipe::new));
+
+    // 8 glass + dye -> 8 Chroma Glass -- see ChromaGlassRecipe.
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<ChromaGlassRecipe>> CHROMA_GLASS_SERIALIZER = RECIPE_SERIALIZERS.register(
+            "chroma_glass", () -> new SimpleCraftingRecipeSerializer<>(ChromaGlassRecipe::new));
+
+    // 6 Chroma Glass (same color) -> 16 Chroma Glass Pane, matching vanilla's own real
+    // glass-to-pane ratio -- see ChromaGlassToPaneRecipe.
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<ChromaGlassToPaneRecipe>> CHROMA_GLASS_TO_PANE_SERIALIZER = RECIPE_SERIALIZERS.register(
+            "chroma_glass_to_pane", () -> new SimpleCraftingRecipeSerializer<>(ChromaGlassToPaneRecipe::new));
+
+    // 6 Chroma Stained Glass (same color) -> 16 Chroma Stained Glass Pane, matching vanilla's own real
+    // stained-glass-to-pane ratio -- see ChromaStainedGlassToPaneRecipe.
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<ChromaStainedGlassToPaneRecipe>> CHROMA_STAINED_GLASS_TO_PANE_SERIALIZER = RECIPE_SERIALIZERS.register(
+            "chroma_stained_glass_to_pane", () -> new SimpleCraftingRecipeSerializer<>(ChromaStainedGlassToPaneRecipe::new));
 
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN_TAB = CREATIVE_MODE_TABS.register("main", () -> CreativeModeTab.builder()
@@ -362,6 +448,7 @@ public class TintedFullSpectrum {
         RECIPE_SERIALIZERS.register(modEventBus);
         DATA_COMPONENTS.register(modEventBus);
         PARTICLE_TYPES.register(modEventBus);
+        ENTITY_TYPES.register(modEventBus);
 
         // Register the Chroma Alembic's client->server "Selected" color payload
         modEventBus.addListener(this::registerPayloads);

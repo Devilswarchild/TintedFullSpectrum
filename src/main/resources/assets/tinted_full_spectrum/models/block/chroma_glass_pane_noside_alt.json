@@ -1,8 +1,8 @@
 {
   "ambientocclusion": false,
   "textures": {
-    "particle": "tinted_full_spectrum:block/chroma_stained_glass",
-    "pane": "tinted_full_spectrum:block/chroma_stained_glass"
+    "particle": "tinted_full_spectrum:block/tinted_glass",
+    "pane": "tinted_full_spectrum:block/tinted_glass"
   },
   "elements": [
     {
@@ -12,6 +12,5 @@
         "east": { "uv": [7, 0, 9, 16], "texture": "#pane", "tintindex": 0 }
       }
     }
-  ],
-  "render_type": "translucent"
+  ]
 }

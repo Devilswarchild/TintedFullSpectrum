@@ -24,9 +24,20 @@
 
   "block.tinted_full_spectrum.chroma_glass_pane": "Chroma Glass Pane",
   "item.tinted_full_spectrum.chroma_glass_pane": "Chroma Glass Pane",
+  "block.tinted_full_spectrum.chroma_glass": "Chroma Glass",
+  "item.tinted_full_spectrum.chroma_glass": "Chroma Glass",
+  "block.tinted_full_spectrum.chroma_stained_glass": "Chroma Stained Glass",
+  "item.tinted_full_spectrum.chroma_stained_glass": "Chroma Stained Glass",
+  "block.tinted_full_spectrum.chroma_stained_glass_pane": "Chroma Stained Glass Pane",
+  "item.tinted_full_spectrum.chroma_stained_glass_pane": "Chroma Stained Glass Pane",
 
   "block.tinted_full_spectrum.tinted_terracotta": "Tinted Terracotta",
   "item.tinted_full_spectrum.tinted_terracotta": "Tinted Terracotta",
+
+  "block.tinted_full_spectrum.tinted_concrete": "Tinted Concrete",
+  "item.tinted_full_spectrum.tinted_concrete": "Tinted Concrete",
+  "block.tinted_full_spectrum.tinted_concrete_powder": "Tinted Concrete Powder",
+  "item.tinted_full_spectrum.tinted_concrete_powder": "Tinted Concrete Powder",
 
   "block.tinted_full_spectrum.tinted_planks": "Tinted Planks",
   "block.tinted_full_spectrum.tinted_planks_stairs": "Tinted Planks Stairs",

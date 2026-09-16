@@ -4,6 +4,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
@@ -21,10 +22,10 @@ import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
 
 // Takes N vanilla planks/wood stairs/slab/fence/fence gate/door/torch/grass block/short grass/tall
-// grass/wool/carpet/terracotta (any of the ~11 wood types or 16 dye colors, plus the single-material
-// items) plus a Colored Dye, and outputs N of the equivalent Tinted shape in that dye's color -- one
-// universal converter rather than needing a separate blank-dye step to obtain the mod's own plain
-// shape first. N is per-shape, not always 1: for shapes vanilla itself has no dyeing mechanic for at
+// grass/wool/carpet/terracotta (any of the ~11 wood types, plus the single-material items) plus a
+// Colored Dye, and outputs N of the equivalent Tinted shape in that dye's color -- one universal
+// converter rather than needing a separate blank-dye step to obtain the mod's own plain shape first.
+// N is per-shape, not always 1: for shapes vanilla itself has no dyeing mechanic for at
 // all, it matches that vanilla item's own real crafting yield (4 planks per log, 4 stairs, 6 slabs, 3
 // fence, 3 doors, 4 torches per craft), so a dyed batch matches what one crafting action of the base
 // material would give you. Fence Gate stays 1:1 since vanilla's own recipe only ever yields 1. Wool
@@ -33,7 +34,9 @@ import net.minecraft.world.level.block.StairBlock;
 // matching vanilla's own real terracotta dye ratio (8 terracotta + 1 dye -> 8 colored, same as stained
 // glass) -- a THIRD distinct reason for a given batch size, not a gap-fill or a yield-borrow, just the
 // real number. Grass Block/Short Grass/Tall Grass stay 1:1 too since vanilla has no crafting recipe
-// for them at all (silk touch/world gen only) -- no yield number exists to borrow.
+// for them at all (silk touch/world gen only) -- no yield number exists to borrow. Concrete Powder is
+// NOT handled here -- it crafts straight from raw sand/gravel/dye, mirroring vanilla's own recipe
+// shape exactly, so it has its own dedicated TintedConcretePowderRecipe instead.
 //
 // Which vanilla item is "convertible" is determined by vanilla's own planks/wooden_stairs/
 // wooden_slabs/wooden_fences/fence_gates/wool/wool_carpets tags, or (for doors/torch/grass, which
@@ -71,7 +74,16 @@ public class ConvertAndDyeRecipe extends CustomRecipe {
         }
         ItemStack target = (ItemStack) found[0];
         ItemStack dye = (ItemStack) found[1];
-        TintColorComponent color = dye.get(TintedFullSpectrum.TINT_COLOR.get());
+        TintColorComponent color;
+        if (dye.getItem() instanceof DyeItem vanillaDye) {
+            // A real vanilla dye (not our own Colored Dye) -- only reachable for Terracotta (see
+            // isVanillaDyeAccepted), mirroring vanilla's own real "8 terracotta + 1 dye -> 8 colored"
+            // recipe (red_terracotta.json et al, confirmed via the real recipe JSON, not guessed).
+            // getTextureDiffuseColor() is vanilla's own "what RGB does this dye tint a texture" value.
+            color = new TintColorComponent(vanillaDye.getDyeColor().getTextureDiffuseColor());
+        } else {
+            color = dye.get(TintedFullSpectrum.TINT_COLOR.get());
+        }
         if (color == null) {
             return ItemStack.EMPTY;
         }
@@ -84,12 +96,14 @@ public class ConvertAndDyeRecipe extends CustomRecipe {
         return result;
     }
 
-    // Returns {target, dye} if the grid holds exactly one Colored Dye and exactly that shape's batch
-    // size worth of ONE convertible item (all in separate cells, matching every other batch recipe in
-    // this mod, e.g. WoolToCarpetRecipe/ChromaGlassPaneRecipe).
+    // Returns {target, dye} if the grid holds exactly one dye (a Colored Dye always works; a real
+    // vanilla DyeItem only works for Terracotta, see isVanillaDyeAccepted) and exactly that shape's
+    // batch size worth of ONE convertible item (all in separate cells, matching every other batch
+    // recipe in this mod, e.g. WoolToCarpetRecipe/ChromaGlassPaneRecipe).
     private static Object[] findInputs(CraftingInput input) {
         ItemStack target = ItemStack.EMPTY;
         ItemStack dye = ItemStack.EMPTY;
+        boolean vanillaDye = false;
         int targetCount = 0;
         for (int i = 0; i < input.size(); i++) {
             ItemStack stack = input.getItem(i);
@@ -101,6 +115,12 @@ public class ConvertAndDyeRecipe extends CustomRecipe {
                     return null;
                 }
                 dye = stack;
+            } else if (stack.getItem() instanceof DyeItem) {
+                if (!dye.isEmpty()) {
+                    return null;
+                }
+                dye = stack;
+                vanillaDye = true;
             } else if (isConvertible(stack)) {
                 if (!target.isEmpty() && stack.getItem() != target.getItem()) {
                     return null;
@@ -114,8 +134,21 @@ public class ConvertAndDyeRecipe extends CustomRecipe {
         if (target.isEmpty() || dye.isEmpty()) {
             return null;
         }
+        if (vanillaDye && !isVanillaDyeAccepted(target.getItem())) {
+            return null;
+        }
         Conversion conversion = conversionFor(target.getItem());
         return conversion != null && targetCount == conversion.batchSize() ? new Object[] {target, dye} : null;
+    }
+
+    // Only Terracotta accepts a real vanilla dye, mirroring vanilla's own real dye recipe for it --
+    // every other shape here either has no vanilla dye mechanic at all to mirror (planks family,
+    // doors, torch, grass -- none of these are dyeable in vanilla), or genuinely would collide with
+    // an already-existing identical-shape vanilla recipe if extended this way (Wool/Carpet: vanilla's
+    // own dye_white_wool.json/dye_white_carpet.json are the SAME 1-item+1-dye shape our conversion
+    // uses, so accepting a vanilla dye there would make two recipes match the exact same input).
+    private static boolean isVanillaDyeAccepted(Item item) {
+        return item instanceof BlockItem blockItem && blockItem.getBlock() == Blocks.TERRACOTTA;
     }
 
     private static boolean isConvertible(ItemStack stack) {

@@ -142,7 +142,10 @@ public class TintedFullSpectrumClient {
                 TintedFullSpectrum.TINTED_GRASS_BLOCK.get(), TintedFullSpectrum.TINTED_SHORT_GRASS.get(),
                 TintedFullSpectrum.TINTED_TALL_GRASS.get(), TintedFullSpectrum.TINTED_WOOL.get(),
                 TintedFullSpectrum.TINTED_CARPET.get(), TintedFullSpectrum.CHROMA_GLASS_PANE.get(),
-                TintedFullSpectrum.TINTED_TERRACOTTA.get()));
+                TintedFullSpectrum.CHROMA_GLASS.get(), TintedFullSpectrum.CHROMA_STAINED_GLASS.get(),
+                TintedFullSpectrum.CHROMA_STAINED_GLASS_PANE.get(),
+                TintedFullSpectrum.TINTED_TERRACOTTA.get(), TintedFullSpectrum.TINTED_CONCRETE.get(),
+                TintedFullSpectrum.TINTED_CONCRETE_POWDER.get()));
         for (var block : TintedFullSpectrum.TINTED_DOOR_BLOCKS.values()) {
             blocks.add(block.get());
         }
@@ -158,7 +161,10 @@ public class TintedFullSpectrumClient {
                 TintedFullSpectrum.TINTED_GRASS_BLOCK_ITEM.get(), TintedFullSpectrum.TINTED_SHORT_GRASS_ITEM.get(),
                 TintedFullSpectrum.TINTED_TALL_GRASS_ITEM.get(), TintedFullSpectrum.TINTED_WOOL_ITEM.get(),
                 TintedFullSpectrum.TINTED_CARPET_ITEM.get(), TintedFullSpectrum.CHROMA_GLASS_PANE_ITEM.get(),
-                TintedFullSpectrum.TINTED_TERRACOTTA_ITEM.get(),
+                TintedFullSpectrum.CHROMA_GLASS_ITEM.get(), TintedFullSpectrum.CHROMA_STAINED_GLASS_ITEM.get(),
+                TintedFullSpectrum.CHROMA_STAINED_GLASS_PANE_ITEM.get(),
+                TintedFullSpectrum.TINTED_TERRACOTTA_ITEM.get(), TintedFullSpectrum.TINTED_CONCRETE_ITEM.get(),
+                TintedFullSpectrum.TINTED_CONCRETE_POWDER_ITEM.get(),
         };
     }
 
@@ -188,6 +194,7 @@ public class TintedFullSpectrumClient {
     @SubscribeEvent
     static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(TintedFullSpectrum.CHROMA_ALEMBIC_BLOCK_ENTITY.get(), ChromaAlembicRenderer::new);
+        event.registerEntityRenderer(TintedFullSpectrum.TINTED_FALLING_BLOCK.get(), TintedFallingBlockRenderer::new);
     }
 
     @SubscribeEvent
@@ -229,11 +236,21 @@ public class TintedFullSpectrumClient {
             ItemBlockRenderTypes.setRenderLayer(TintedFullSpectrum.TINTED_GRASS_BLOCK.get(), RenderType.cutoutMipped());
             ItemBlockRenderTypes.setRenderLayer(TintedFullSpectrum.TINTED_SHORT_GRASS.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(TintedFullSpectrum.TINTED_TALL_GRASS.get(), RenderType.cutout());
-            // Matches vanilla's own choice for stained glass panes specifically (translucent, not the
-            // cutoutMipped plain Blocks.GLASS_PANE uses) -- the pane texture has genuine partial-alpha
-            // gradations (border/interior/shine flecks), not just a hard 0/255 cutoff, so cutout would
-            // threshold it to fully opaque and lose the see-through glass look entirely.
-            ItemBlockRenderTypes.setRenderLayer(TintedFullSpectrum.CHROMA_GLASS_PANE.get(), RenderType.translucent());
+            // Chroma Glass Pane's own texture (a desaturated copy of vanilla's real glass_pane_top.png
+            // + reused Chroma Glass block texture) is binary cutout, same as the block -- matches
+            // vanilla's own plain Blocks.GLASS_PANE registration (cutoutMipped).
+            ItemBlockRenderTypes.setRenderLayer(TintedFullSpectrum.CHROMA_GLASS_PANE.get(), RenderType.cutoutMipped());
+            // Chroma Glass's own texture (a desaturated copy of vanilla's real glass.png) is binary
+            // cutout (border opaque, interior fully transparent, corner "crack" marks) with no partial
+            // alpha at all -- confirmed by direct pixel inspection -- so this matches vanilla's own
+            // plain Blocks.GLASS registration (cutoutMipped).
+            ItemBlockRenderTypes.setRenderLayer(TintedFullSpectrum.CHROMA_GLASS.get(), RenderType.cutoutMipped());
+            // Chroma Stained Glass/Pane, by contrast, use chroma_stained_glass.png -- genuine
+            // partial-alpha gradations (border/interior/shine flecks), not a hard 0/255 cutoff, so
+            // cutout would threshold it to fully opaque and lose the see-through look entirely. Matches
+            // vanilla's own choice for real stained glass/panes (translucent).
+            ItemBlockRenderTypes.setRenderLayer(TintedFullSpectrum.CHROMA_STAINED_GLASS.get(), RenderType.translucent());
+            ItemBlockRenderTypes.setRenderLayer(TintedFullSpectrum.CHROMA_STAINED_GLASS_PANE.get(), RenderType.translucent());
         });
 
         allDoorBlocks = new java.util.HashSet<>();

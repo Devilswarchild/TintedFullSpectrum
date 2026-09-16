@@ -1,9 +1,9 @@
 {
   "ambientocclusion": false,
   "textures": {
-    "particle": "tinted_full_spectrum:block/chroma_stained_glass",
-    "edge": "tinted_full_spectrum:block/chroma_stained_glass_pane_top",
-    "pane": "tinted_full_spectrum:block/chroma_stained_glass"
+    "particle": "tinted_full_spectrum:block/tinted_glass",
+    "edge": "tinted_full_spectrum:block/tinted_glass_pane_top",
+    "pane": "tinted_full_spectrum:block/tinted_glass"
   },
   "elements": [
     {
@@ -14,6 +14,5 @@
         "up":   { "uv": [7, 7, 9, 9], "texture": "#edge", "tintindex": 0 }
       }
     }
-  ],
-  "render_type": "translucent"
+  ]
 }
