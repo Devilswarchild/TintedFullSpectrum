@@ -1,0 +1,12 @@
+{
+  "type": "tinted_full_spectrum:tint_carrying_smelting",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 0.3,
+  "ingredient": {
+    "item": "tinted_full_spectrum:tinted_clay_ball"
+  },
+  "result": {
+    "id": "tinted_full_spectrum:tinted_brick"
+  }
+}

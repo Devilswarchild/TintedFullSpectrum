@@ -1,0 +1,16 @@
+{
+  "type": "tinted_full_spectrum:tint_carrying_shaped",
+  "category": "building",
+  "key": {
+    "#": { "item": "tinted_full_spectrum:tinted_bricks" }
+  },
+  "pattern": [
+    "#  ",
+    "## ",
+    "###"
+  ],
+  "result": {
+    "count": 4,
+    "id": "tinted_full_spectrum:tinted_brick_stairs"
+  }
+}

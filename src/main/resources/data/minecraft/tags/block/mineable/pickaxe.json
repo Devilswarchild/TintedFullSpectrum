@@ -14,6 +14,14 @@
     "tinted_full_spectrum:tinted_sandstone_stairs",
     "tinted_full_spectrum:tinted_sandstone_slab",
     "tinted_full_spectrum:tinted_red_sandstone_stairs",
-    "tinted_full_spectrum:tinted_red_sandstone_slab"
+    "tinted_full_spectrum:tinted_red_sandstone_slab",
+    "tinted_full_spectrum:tinted_bricks",
+    "tinted_full_spectrum:tinted_brick_slab",
+    "tinted_full_spectrum:tinted_brick_stairs",
+    "tinted_full_spectrum:tinted_brick_wall",
+    "tinted_full_spectrum:tinted_brick_fence",
+    "tinted_full_spectrum:tinted_brick_fence_gate",
+    "tinted_full_spectrum:brick_fence",
+    "tinted_full_spectrum:brick_fence_gate"
   ]
 }

@@ -1,0 +1,6 @@
+{
+  "parent": "tinted_full_spectrum:block/custom/tinted_wall_side",
+  "textures": {
+    "wall": "tinted_full_spectrum:block/tinted_bricks"
+  }
+}

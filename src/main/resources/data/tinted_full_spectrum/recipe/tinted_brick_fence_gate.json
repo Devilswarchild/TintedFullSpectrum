@@ -1,0 +1,16 @@
+{
+  "type": "tinted_full_spectrum:tint_carrying_shaped",
+  "category": "redstone",
+  "key": {
+    "#": { "item": "tinted_full_spectrum:tinted_brick" },
+    "W": { "item": "tinted_full_spectrum:tinted_bricks" }
+  },
+  "pattern": [
+    "#W#",
+    "#W#"
+  ],
+  "result": {
+    "count": 1,
+    "id": "tinted_full_spectrum:tinted_brick_fence_gate"
+  }
+}

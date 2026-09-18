@@ -1,0 +1,16 @@
+{
+  "type": "tinted_full_spectrum:tint_carrying_shaped",
+  "category": "misc",
+  "key": {
+    "#": { "item": "tinted_full_spectrum:tinted_brick" },
+    "W": { "item": "tinted_full_spectrum:tinted_bricks" }
+  },
+  "pattern": [
+    "W#W",
+    "W#W"
+  ],
+  "result": {
+    "count": 3,
+    "id": "tinted_full_spectrum:tinted_brick_fence"
+  }
+}

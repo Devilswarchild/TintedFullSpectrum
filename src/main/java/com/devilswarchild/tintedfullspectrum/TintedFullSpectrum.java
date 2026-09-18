@@ -29,6 +29,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
@@ -401,6 +402,82 @@ public class TintedFullSpectrum {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SimpleTintableBlockEntity>> TINTED_RED_SANDSTONE_SLAB_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
             "tinted_red_sandstone_slab", () -> BlockEntityType.Builder.of((pos, state) -> new SimpleTintableBlockEntity(TintedFullSpectrum.TINTED_RED_SANDSTONE_SLAB_BLOCK_ENTITY.get(), pos, state), TINTED_RED_SANDSTONE_SLAB.get()).build(null));
 
+    // A brick-appropriate WoodType for FenceGateBlock's mandatory constructor param -- FenceGateBlock
+    // has no non-wood constructor at all, but WoodType.OAK's creak doesn't fit a masonry material and
+    // neither Brick Fence Gate here is made of wood. No real vanilla "stone fence gate" sound exists to
+    // mirror, so this picks the closest sensible analog (a heavy door creak) instead of a wooden one --
+    // used for both the plain and Tinted Brick Fence Gate.
+    public static final WoodType BRICK_WOOD_TYPE = WoodType.register(new WoodType(MODID + ":brick",
+            net.minecraft.world.level.block.state.properties.BlockSetType.STONE, SoundType.STONE, SoundType.STONE,
+            net.minecraft.sounds.SoundEvents.IRON_DOOR_CLOSE, net.minecraft.sounds.SoundEvents.IRON_DOOR_OPEN));
+
+    // Tinted Bricks family: the mod's first family with a full multi-stage vanilla production chain
+    // (Clay Ball -> Brick -> Bricks, both real vanilla mechanics) rather than a single conversion step,
+    // and its first Wall-type block. Shapes are crafted directly from the already-dyed Tinted Bricks
+    // block (no per-shape dye step -- see tinted_full_spectrum_bricks_handoff.md), so all six blocks
+    // share ONE block entity type, same sharing convention as Torch's floor/wall and Planks' five
+    // shapes.
+    public static final DeferredBlock<Block> TINTED_BRICKS = BLOCKS.register("tinted_bricks",
+            () -> new SimpleTintableBlock(Properties.ofFullCopy(Blocks.BRICKS), TintedFullSpectrum.TINTED_BRICKS_BLOCK_ENTITY::get));
+    public static final DeferredBlock<Block> TINTED_BRICK_SLAB = BLOCKS.register("tinted_brick_slab",
+            () -> new SimpleTintableSlabBlock(Properties.ofFullCopy(Blocks.BRICK_SLAB), TintedFullSpectrum.TINTED_BRICKS_BLOCK_ENTITY::get));
+    public static final DeferredBlock<Block> TINTED_BRICK_STAIRS = BLOCKS.register("tinted_brick_stairs",
+            () -> new SimpleTintableStairBlock(TINTED_BRICKS.get().defaultBlockState(), Properties.ofFullCopy(Blocks.BRICK_STAIRS),
+                    TintedFullSpectrum.TINTED_BRICKS_BLOCK_ENTITY::get));
+    public static final DeferredBlock<Block> TINTED_BRICK_WALL = BLOCKS.register("tinted_brick_wall",
+            () -> new SimpleTintableWallBlock(Properties.ofFullCopy(Blocks.BRICK_WALL), TintedFullSpectrum.TINTED_BRICKS_BLOCK_ENTITY::get));
+    public static final DeferredBlock<Block> TINTED_BRICK_FENCE = BLOCKS.register("tinted_brick_fence",
+            () -> new SimpleTintableFenceBlock(Properties.ofFullCopy(Blocks.BRICKS), TintedFullSpectrum.TINTED_BRICKS_BLOCK_ENTITY::get));
+    // Properties copied from Blocks.BRICKS (not a vanilla fence gate) so hardness/blast resistance and
+    // requiresCorrectToolForDrops match the brick material this is actually made of, not wood. The
+    // crafting shape also ended up brick-family-native rather than mirroring the generic wood fence
+    // gate: Tinted Bricks (block) in the middle column, Tinted Brick (item) flanking on both sides,
+    // 2 rows -- the inverse arrangement from Fence's own W#W/W#W (see tinted_brick_fence_gate.json),
+    // so the two recipes can't collide. Matches how Nether Brick Fence's own real properties copy
+    // Nether Bricks rather than any wood fence.
+    public static final DeferredBlock<Block> TINTED_BRICK_FENCE_GATE = BLOCKS.register("tinted_brick_fence_gate",
+            () -> new SimpleTintableFenceGateBlock(BRICK_WOOD_TYPE, Properties.ofFullCopy(Blocks.BRICKS), TintedFullSpectrum.TINTED_BRICKS_BLOCK_ENTITY::get));
+
+    public static final DeferredItem<TintableBlockItem> TINTED_BRICKS_ITEM = ITEMS.register("tinted_bricks",
+            () -> new TintableBlockItem(TINTED_BRICKS.get(), new Item.Properties()));
+    public static final DeferredItem<TintableBlockItem> TINTED_BRICK_SLAB_ITEM = ITEMS.register("tinted_brick_slab",
+            () -> new TintableBlockItem(TINTED_BRICK_SLAB.get(), new Item.Properties()));
+    public static final DeferredItem<TintableBlockItem> TINTED_BRICK_STAIRS_ITEM = ITEMS.register("tinted_brick_stairs",
+            () -> new TintableBlockItem(TINTED_BRICK_STAIRS.get(), new Item.Properties()));
+    public static final DeferredItem<TintableBlockItem> TINTED_BRICK_WALL_ITEM = ITEMS.register("tinted_brick_wall",
+            () -> new TintableBlockItem(TINTED_BRICK_WALL.get(), new Item.Properties()));
+    public static final DeferredItem<TintableBlockItem> TINTED_BRICK_FENCE_ITEM = ITEMS.register("tinted_brick_fence",
+            () -> new TintableBlockItem(TINTED_BRICK_FENCE.get(), new Item.Properties()));
+    public static final DeferredItem<TintableBlockItem> TINTED_BRICK_FENCE_GATE_ITEM = ITEMS.register("tinted_brick_fence_gate",
+            () -> new TintableBlockItem(TINTED_BRICK_FENCE_GATE.get(), new Item.Properties()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SimpleTintableBlockEntity>> TINTED_BRICKS_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "tinted_bricks", () -> BlockEntityType.Builder.of((pos, state) -> new SimpleTintableBlockEntity(TintedFullSpectrum.TINTED_BRICKS_BLOCK_ENTITY.get(), pos, state),
+                    TINTED_BRICKS.get(), TINTED_BRICK_SLAB.get(), TINTED_BRICK_STAIRS.get(), TINTED_BRICK_WALL.get(),
+                    TINTED_BRICK_FENCE.get(), TINTED_BRICK_FENCE_GATE.get()).build(null));
+
+    // Tinted Clay Ball / Tinted Brick: the raw-material and intermediate items feeding the Bricks
+    // chain above -- both standalone registered items (not invisible intermediates), plain (non-block)
+    // tintable items via TintableRawItem.
+    public static final DeferredItem<TintableRawItem> TINTED_CLAY_BALL_ITEM = ITEMS.register("tinted_clay_ball",
+            () -> new TintableRawItem(new Item.Properties()));
+    public static final DeferredItem<TintableRawItem> TINTED_BRICK_ITEM = ITEMS.register("tinted_brick",
+            () -> new TintableRawItem(new Item.Properties()));
+
+    // Plain, untinted Brick Fence / Brick Fence Gate -- vanilla itself has neither at all (Nether Brick
+    // Fence is the only non-wood fence vanilla ships), so these exist purely as genuinely new,
+    // ordinary vanilla-parity content: real vanilla Bricks/Brick textures and ingredients, an ordinary
+    // static crafting_shaped recipe (no dye, no custom recipe class), so they're genuinely JEI-visible
+    // and discoverable even by a player who's never touched the Chroma Alembic. Distinct items from
+    // Tinted Brick Fence/Fence Gate, not a substitute for them -- see brick_fence.json/
+    // brick_fence_gate.json, which mirror the tinted recipes' own shapes exactly.
+    public static final DeferredBlock<Block> BRICK_FENCE = BLOCKS.register("brick_fence",
+            () -> new net.minecraft.world.level.block.FenceBlock(Properties.ofFullCopy(Blocks.BRICKS)));
+    public static final DeferredBlock<Block> BRICK_FENCE_GATE = BLOCKS.register("brick_fence_gate",
+            () -> new net.minecraft.world.level.block.FenceGateBlock(BRICK_WOOD_TYPE, Properties.ofFullCopy(Blocks.BRICKS)));
+    public static final DeferredItem<BlockItem> BRICK_FENCE_ITEM = ITEMS.registerSimpleBlockItem("brick_fence", BRICK_FENCE);
+    public static final DeferredItem<BlockItem> BRICK_FENCE_GATE_ITEM = ITEMS.registerSimpleBlockItem("brick_fence_gate", BRICK_FENCE_GATE);
+
     // Tinted Concrete -- FULL vanilla parity per explicit user request ("might as well make them
     // mirror their vanilla counterparts"): a real gravity-affected Tinted Concrete Powder that
     // hardens into this solid block on water contact, same two-block relationship as vanilla's own
@@ -571,6 +648,19 @@ public class TintedFullSpectrum {
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<TintedChiseledSandstoneFromSlabRecipe>> TINTED_CHISELED_SANDSTONE_FROM_SLAB_SERIALIZER = RECIPE_SERIALIZERS.register(
             "tinted_chiseled_sandstone_from_slab", () -> new SimpleCraftingRecipeSerializer<>(TintedChiseledSandstoneFromSlabRecipe::new));
 
+    // Stage 0 -- 1 Clay Ball + Colored Dye (or the Mud + Gravel + Colored Dye fallback) -> 4 Tinted
+    // Clay Ball -- see TintedClayBallRecipe.
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<TintedClayBallRecipe>> TINTED_CLAY_BALL_SERIALIZER = RECIPE_SERIALIZERS.register(
+            "tinted_clay_ball", () -> new SimpleCraftingRecipeSerializer<>(TintedClayBallRecipe::new));
+
+    // Real shaped-crafting recipes with an exact-color-match requirement -- Stage 2 assembly, Slab/
+    // Stairs/Wall crafting, Fence, and Fence Gate all register under this one serializer, with each
+    // recipe's actual pattern/key/result living in its own JSON (see TintCarryingShapedRecipe; fixes
+    // the wall/stairs collision bug the earlier per-shape CustomRecipe classes had, since those only
+    // checked ingredient COUNT, not real position).
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<TintCarryingShapedRecipe>> TINT_CARRYING_SHAPED_SERIALIZER = RECIPE_SERIALIZERS.register(
+            "tint_carrying_shaped", TintCarryingShapedRecipe.Serializer::new);
+
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN_TAB = CREATIVE_MODE_TABS.register("main", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.tinted_full_spectrum"))
@@ -589,6 +679,8 @@ public class TintedFullSpectrum {
                 output.accept(BONE_ASH_ITEM.get());
                 output.accept(DYE_PASTE_ITEM.get());
                 output.accept(BLANK_DYE_ITEM.get());
+                output.accept(BRICK_FENCE_ITEM.get());
+                output.accept(BRICK_FENCE_GATE_ITEM.get());
                 // COLORED_DYE_ITEM deliberately not listed -- it's the Chroma Alembic's OUTPUT (any
                 // RGB a player mixes), not a pre-made item to browse; Blank Dye is the raw input.
             }).build());

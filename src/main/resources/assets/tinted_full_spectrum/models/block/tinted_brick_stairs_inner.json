@@ -1,0 +1,8 @@
+{
+  "parent": "tinted_full_spectrum:block/custom/tinted_inner_stairs",
+  "textures": {
+    "bottom": "tinted_full_spectrum:block/tinted_bricks",
+    "top": "tinted_full_spectrum:block/tinted_bricks",
+    "side": "tinted_full_spectrum:block/tinted_bricks"
+  }
+}
