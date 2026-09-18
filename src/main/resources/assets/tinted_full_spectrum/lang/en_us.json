@@ -83,6 +83,10 @@
   "block.tinted_full_spectrum.brick_fence_gate": "Brick Fence Gate",
   "item.tinted_full_spectrum.brick_fence_gate": "Brick Fence Gate",
 
+  "block.tinted_full_spectrum.tinted_glowstone": "Tinted Glowstone",
+  "item.tinted_full_spectrum.tinted_glowstone": "Tinted Glowstone",
+  "item.tinted_full_spectrum.tinted_glowstone_dust": "Tinted Glowstone Dust",
+
   "block.tinted_full_spectrum.tinted_concrete": "Tinted Concrete",
   "item.tinted_full_spectrum.tinted_concrete": "Tinted Concrete",
   "block.tinted_full_spectrum.tinted_concrete_powder": "Tinted Concrete Powder",

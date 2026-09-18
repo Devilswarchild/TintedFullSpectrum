@@ -7,6 +7,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
@@ -57,8 +58,12 @@ public class ConvertAndDyeRecipe extends CustomRecipe {
     }
 
     // Bundles what a convertible Block maps to: the Tinted output item, and how many of the vanilla
-    // input are required per craft (and how many of the output that craft produces -- always equal).
-    private record Conversion(Item output, int batchSize) {
+    // input are required per craft and how many of the output that craft produces -- equal for every
+    // block shape here; only Glowstone Dust (1 dust -> 4 Tinted Glowstone Dust) differs.
+    private record Conversion(Item output, int inputCount, int outputCount) {
+        Conversion(Item output, int batchSize) {
+            this(output, batchSize, batchSize);
+        }
     }
 
     @Override
@@ -91,7 +96,7 @@ public class ConvertAndDyeRecipe extends CustomRecipe {
         if (conversion == null) {
             return ItemStack.EMPTY;
         }
-        ItemStack result = new ItemStack(conversion.output(), conversion.batchSize());
+        ItemStack result = new ItemStack(conversion.output(), conversion.outputCount());
         result.set(TintedFullSpectrum.TINT_COLOR.get(), color);
         return result;
     }
@@ -138,7 +143,7 @@ public class ConvertAndDyeRecipe extends CustomRecipe {
             return null;
         }
         Conversion conversion = conversionFor(target.getItem());
-        return conversion != null && targetCount == conversion.batchSize() ? new Object[] {target, dye} : null;
+        return conversion != null && targetCount == conversion.inputCount() ? new Object[] {target, dye} : null;
     }
 
     // Only Terracotta accepts a real vanilla dye, mirroring vanilla's own real dye recipe for it --
@@ -152,6 +157,10 @@ public class ConvertAndDyeRecipe extends CustomRecipe {
     }
 
     private static boolean isConvertible(ItemStack stack) {
+        // Raw glowstone dust (a plain Item, not a BlockItem) -- 1 dust + dye -> 4 Tinted Glowstone Dust.
+        if (stack.getItem() == Items.GLOWSTONE_DUST) {
+            return true;
+        }
         if (stack.is(ItemTags.PLANKS) || stack.is(ItemTags.WOODEN_STAIRS)
                 || stack.is(ItemTags.WOODEN_SLABS) || stack.is(ItemTags.WOODEN_FENCES)
                 || stack.is(ItemTags.FENCE_GATES) || stack.is(ItemTags.WOOL) || stack.is(ItemTags.WOOL_CARPETS)) {
@@ -197,6 +206,11 @@ public class ConvertAndDyeRecipe extends CustomRecipe {
     }
 
     private static Conversion conversionFor(Item item) {
+        if (item == Items.GLOWSTONE_DUST) {
+            // No vanilla dye mechanic exists for dust; batch of 4 so 4 dust assemble into exactly 1
+            // Tinted Glowstone (vanilla's real 4 dust -> 1 glowstone ratio) with nothing left over.
+            return new Conversion(TintedFullSpectrum.TINTED_GLOWSTONE_DUST_ITEM.get(), 1, 4);
+        }
         if (!(item instanceof BlockItem blockItem)) {
             return null;
         }

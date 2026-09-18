@@ -1,0 +1,15 @@
+{
+  "type": "tinted_full_spectrum:tint_carrying_shaped",
+  "category": "building",
+  "key": {
+    "#": { "item": "tinted_full_spectrum:tinted_glowstone_dust" }
+  },
+  "pattern": [
+    "##",
+    "##"
+  ],
+  "result": {
+    "count": 1,
+    "id": "tinted_full_spectrum:tinted_glowstone"
+  }
+}

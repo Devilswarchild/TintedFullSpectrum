@@ -478,6 +478,19 @@ public class TintedFullSpectrum {
     public static final DeferredItem<BlockItem> BRICK_FENCE_ITEM = ITEMS.registerSimpleBlockItem("brick_fence", BRICK_FENCE);
     public static final DeferredItem<BlockItem> BRICK_FENCE_GATE_ITEM = ITEMS.registerSimpleBlockItem("brick_fence_gate", BRICK_FENCE_GATE);
 
+    // Tinted Glowstone (vanilla-parity only -- see tinted_full_spectrum_glowstone_handoff.md): a plain
+    // always-on light source. Properties.ofFullCopy(Blocks.GLOWSTONE) carries light level 15, hardness,
+    // sound and the no-tool-required mining behavior, none of which depend on the stored tint. Unlike
+    // every other tinted block it does NOT drop itself unless Silk Touched -- see its loot table.
+    public static final DeferredBlock<Block> TINTED_GLOWSTONE = BLOCKS.register("tinted_glowstone",
+            () -> new SimpleTintableBlock(Properties.ofFullCopy(Blocks.GLOWSTONE), TintedFullSpectrum.TINTED_GLOWSTONE_BLOCK_ENTITY::get));
+    public static final DeferredItem<TintableBlockItem> TINTED_GLOWSTONE_ITEM = ITEMS.register("tinted_glowstone",
+            () -> new TintableBlockItem(TINTED_GLOWSTONE.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SimpleTintableBlockEntity>> TINTED_GLOWSTONE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "tinted_glowstone", () -> BlockEntityType.Builder.of((pos, state) -> new SimpleTintableBlockEntity(TintedFullSpectrum.TINTED_GLOWSTONE_BLOCK_ENTITY.get(), pos, state), TINTED_GLOWSTONE.get()).build(null));
+    public static final DeferredItem<TintableRawItem> TINTED_GLOWSTONE_DUST_ITEM = ITEMS.register("tinted_glowstone_dust",
+            () -> new TintableRawItem(new Item.Properties()));
+
     // Tinted Concrete -- FULL vanilla parity per explicit user request ("might as well make them
     // mirror their vanilla counterparts"): a real gravity-affected Tinted Concrete Powder that
     // hardens into this solid block on water contact, same two-block relationship as vanilla's own

@@ -155,7 +155,8 @@ public class TintedFullSpectrumClient {
                 TintedFullSpectrum.TINTED_RED_SANDSTONE_STAIRS.get(), TintedFullSpectrum.TINTED_RED_SANDSTONE_SLAB.get(),
                 TintedFullSpectrum.TINTED_BRICKS.get(), TintedFullSpectrum.TINTED_BRICK_SLAB.get(),
                 TintedFullSpectrum.TINTED_BRICK_STAIRS.get(), TintedFullSpectrum.TINTED_BRICK_WALL.get(),
-                TintedFullSpectrum.TINTED_BRICK_FENCE.get(), TintedFullSpectrum.TINTED_BRICK_FENCE_GATE.get()));
+                TintedFullSpectrum.TINTED_BRICK_FENCE.get(), TintedFullSpectrum.TINTED_BRICK_FENCE_GATE.get(),
+                TintedFullSpectrum.TINTED_GLOWSTONE.get()));
         for (var block : TintedFullSpectrum.TINTED_DOOR_BLOCKS.values()) {
             blocks.add(block.get());
         }
@@ -186,6 +187,7 @@ public class TintedFullSpectrumClient {
                 TintedFullSpectrum.TINTED_BRICK_STAIRS_ITEM.get(), TintedFullSpectrum.TINTED_BRICK_WALL_ITEM.get(),
                 TintedFullSpectrum.TINTED_BRICK_FENCE_ITEM.get(), TintedFullSpectrum.TINTED_BRICK_FENCE_GATE_ITEM.get(),
                 TintedFullSpectrum.TINTED_CLAY_BALL_ITEM.get(), TintedFullSpectrum.TINTED_BRICK_ITEM.get(),
+                TintedFullSpectrum.TINTED_GLOWSTONE_ITEM.get(), TintedFullSpectrum.TINTED_GLOWSTONE_DUST_ITEM.get(),
         };
     }
 
