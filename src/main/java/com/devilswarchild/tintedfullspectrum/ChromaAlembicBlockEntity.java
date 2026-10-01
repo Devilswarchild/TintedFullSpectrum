@@ -103,6 +103,18 @@ public class ChromaAlembicBlockEntity extends BlockEntity implements Container {
         return existing != null && existing.rgb() == selectedColor;
     }
 
+    // Defensive-only: craftStartGameTime should never be later than the current game time, but if it
+    // ever is (a world rollback, a /time set, some other mod resetting game time while a craft was
+    // in progress), elapsed would go deeply negative and the craft would never reach TOTAL_TICKS --
+    // stuck processing forever, with no way to recover since the ticker's "processing" branch doesn't
+    // look at the input slot at all. Reset instead of trusting a clearly-impossible stored value, so
+    // the next tick's canStartCraft() check gets a fresh chance.
+    private void resetStuckCraft() {
+        processing = false;
+        setChanged();
+        syncToClients();
+    }
+
     private void startCraft() {
         processing = true;
         craftStartGameTime = level.getGameTime();
@@ -136,7 +148,10 @@ public class ChromaAlembicBlockEntity extends BlockEntity implements Container {
     public static BlockEntityTicker<ChromaAlembicBlockEntity> ticker() {
         return (level, pos, state, be) -> {
             if (be.processing) {
-                if (level.getGameTime() - be.craftStartGameTime >= TOTAL_TICKS) {
+                long elapsed = level.getGameTime() - be.craftStartGameTime;
+                if (elapsed < 0) {
+                    be.resetStuckCraft();
+                } else if (elapsed >= TOTAL_TICKS) {
                     be.completeCraft();
                 }
             } else if (be.canStartCraft()) {
